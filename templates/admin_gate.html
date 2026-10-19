@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Restricted Access Gateway | OVK SECURITY</title>
+  <link rel="stylesheet" href="/static/css/style.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <style>
+    body {
+      background: #060910;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      font-family: var(--font-sans);
+      color: #fff;
+      overflow-x: hidden;
+    }
+    .gate-card {
+      width: 100%;
+      max-width: 440px;
+      background: rgba(13, 18, 28, 0.95);
+      border: 1.5px solid rgba(239, 68, 68, 0.35);
+      border-radius: var(--radius-lg);
+      padding: 38px 32px;
+      box-shadow: 0 0 50px rgba(239, 68, 68, 0.15), 0 20px 40px rgba(0, 0, 0, 0.8);
+      position: relative;
+      backdrop-filter: blur(12px);
+      text-align: center;
+    }
+    .gate-icon {
+      width: 72px;
+      height: 72px;
+      border-radius: 50%;
+      background: rgba(239, 68, 68, 0.12);
+      border: 1.5px solid rgba(239, 68, 68, 0.4);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 2rem;
+      color: #ef4444;
+      margin: 0 auto 20px;
+      box-shadow: 0 0 25px rgba(239, 68, 68, 0.3);
+      animation: gatePulse 2s infinite ease-in-out;
+    }
+    @keyframes gatePulse {
+      0%, 100% { transform: scale(1); box-shadow: 0 0 20px rgba(239, 68, 68, 0.25); }
+      50% { transform: scale(1.05); box-shadow: 0 0 35px rgba(239, 68, 68, 0.45); }
+    }
+    .gate-badge {
+      display: inline-block;
+      font-family: var(--font-mono);
+      font-size: 0.72rem;
+      font-weight: 800;
+      letter-spacing: 1.5px;
+      color: #ef4444;
+      background: rgba(239, 68, 68, 0.12);
+      border: 1px solid rgba(239, 68, 68, 0.3);
+      padding: 4px 12px;
+      border-radius: var(--radius-full);
+      margin-bottom: 12px;
+      text-transform: uppercase;
+    }
+    .gate-input-wrap {
+      position: relative;
+      margin: 24px 0 18px;
+      text-align: left;
+    }
+    .gate-input {
+      width: 100%;
+      background: #080c14;
+      border: 1.5px solid rgba(255, 255, 255, 0.12);
+      border-radius: var(--radius-sm);
+      padding: 14px 44px 14px 16px;
+      color: #fff;
+      font-family: var(--font-mono);
+      font-size: 1rem;
+      letter-spacing: 2px;
+      outline: none;
+      transition: all 0.2s;
+    }
+    .gate-input:focus {
+      border-color: #ef4444;
+      box-shadow: 0 0 15px rgba(239, 68, 68, 0.25);
+      background: #0b101a;
+    }
+    .btn-unlock {
+      width: 100%;
+      padding: 14px;
+      background: linear-gradient(135deg, #ef4444, #b91c1c);
+      color: #fff;
+      font-weight: 800;
+      font-size: 0.95rem;
+      border: none;
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      box-shadow: 0 4px 20px rgba(239, 68, 68, 0.3);
+      transition: all 0.2s;
+      letter-spacing: 0.5px;
+    }
+    .btn-unlock:hover {
+      background: linear-gradient(135deg, #f87171, #dc2626);
+      transform: translateY(-1px);
+      box-shadow: 0 6px 25px rgba(239, 68, 68, 0.45);
+    }
+    .gate-footer {
+      margin-top: 22px;
+      font-size: 0.8rem;
+      color: var(--text-dark);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="gate-card">
+    <div class="gate-icon">
+      <i class="fa-solid fa-shield-halved"></i>
+    </div>
+
+    <div class="gate-badge">
+      <i class="fa-solid fa-lock" style="margin-right: 4px;"></i> LEVEL 5 AUTHORIZATION REQUIRED
+    </div>
+
+    <h2 style="font-size: 1.45rem; font-weight: 900; margin-bottom: 6px; letter-spacing: -0.2px;">SECURITY GATEWAY</h2>
+    <p style="font-size: 0.82rem; color: var(--text-muted); line-height: 1.5;">This endpoint is strictly encrypted. Enter master passkey to access system management.</p>
+
+    <form onsubmit="handleUnlock(event)">
+      <div class="gate-input-wrap">
+        <label style="font-size: 0.72rem; font-weight: 800; text-transform: uppercase; color: var(--text-muted); display: block; margin-bottom: 6px; letter-spacing: 0.5px;">Master Security Passkey</label>
+        <input type="password" id="gate-passkey" class="gate-input" placeholder="••••••••••••" required autocomplete="current-password" autofocus>
+        <button type="button" onclick="togglePass()" style="position: absolute; right: 14px; top: 38px; background: none; border: none; color: var(--text-dark); cursor: pointer;">
+          <i id="eye-icon" class="fa-solid fa-eye"></i>
+        </button>
+      </div>
+
+      <div id="gate-error" style="display: none; background: rgba(239, 68, 68, 0.15); border: 1px solid rgba(239, 68, 68, 0.4); color: #fca5a5; padding: 10px; border-radius: var(--radius-sm); font-size: 0.82rem; font-weight: 700; margin-bottom: 16px;"></div>
+
+      <button type="submit" id="btn-submit-gate" class="btn-unlock">
+        <i class="fa-solid fa-key"></i> VERIFY & UNLOCK
+      </button>
+    </form>
+
+    <div class="gate-footer">
+      <a href="/products" style="color: var(--text-muted); text-decoration: none; font-size: 0.8rem; display: flex; align-items: center; gap: 4px;">
+        <i class="fa-solid fa-arrow-left"></i> Return to Storefront
+      </a>
+      <span style="font-family: var(--font-mono); font-size: 0.72rem; color: var(--text-dark);">
+        <i class="fa-solid fa-bolt" style="color: #f8fafc;"></i> 256-BIT ENCRYPTED
+      </span>
+    </div>
+  </div>
+
+  <div id="toast-container" class="toast-box"></div>
+
+  <script>
+    function togglePass() {
+      const input = document.getElementById('gate-passkey');
+      const icon = document.getElementById('eye-icon');
+      if (input.type === 'password') {
+        input.type = 'text';
+        icon.className = 'fa-solid fa-eye-slash';
+      } else {
+        input.type = 'password';
+        icon.className = 'fa-solid fa-eye';
+      }
+    }
+
+    async function handleUnlock(e) {
+      e.preventDefault();
+      const passkey = document.getElementById('gate-passkey').value;
+      const btn = document.getElementById('btn-submit-gate');
+      const errBox = document.getElementById('gate-error');
+
+      errBox.style.display = 'none';
+      btn.disabled = true;
+      btn.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin"></i> VERIFYING PASSKEY...';
+
+      try {
+        const res = await fetch('/api/admin/verify-passkey', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ passkey })
+        });
+        const data = await res.json();
+
+        if (res.ok && data.success) {
+          btn.style.background = '#f8fafc';
+          btn.innerHTML = '<i class="fa-solid fa-check"></i> ACCESS GRANTED';
+          setTimeout(() => {
+            window.location.reload();
+          }, 500);
+        } else {
+          btn.disabled = false;
+          btn.innerHTML = '<i class="fa-solid fa-key"></i> VERIFY & UNLOCK';
+          errBox.innerText = data.error || 'Access Denied: Invalid Master Passkey.';
+          errBox.style.display = 'block';
+          document.getElementById('gate-passkey').value = '';
+          document.getElementById('gate-passkey').focus();
+        }
+      } catch (err) {
+        btn.disabled = false;
+        btn.innerHTML = '<i class="fa-solid fa-key"></i> VERIFY & UNLOCK';
+        errBox.innerText = 'Security verification failed. Please try again.';
+        errBox.style.display = 'block';
+      }
+    }
+  </script>
+</body>
+</html>

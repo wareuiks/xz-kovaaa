@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard | OVKSHOP</title>
+  <meta name="description" content="View your OVKSHOP wallet balance, active license keys, and transaction history.">
+  <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body>
+
+  <!-- Header / Navbar (Screenshot 1) -->
+  <header class="site-header">
+    <div class="container header-container">
+      <a href="/dashboard" class="brand-logo">
+        <img src="/static/images/logo.png" alt="OVK Logo" class="brand-logo-img">
+        <span class="brand-logo-text">OVK HAX</span>
+      </a>
+
+      <!-- Pill Nav Bar -->
+      <nav class="nav-pills">
+        <div class="nav-pill-item active"><a href="/dashboard" class="active">HOME</a></div>
+        <div class="nav-pill-item"><a href="/products">PRODUCTS</a></div>
+        <div class="nav-pill-item"><a href="/tutorial">TUTORIAL</a></div>
+        <div class="nav-pill-item"><a href="javascript:void(0)" onclick="openSupportModal()">SUPPORT</a></div>
+      </nav>
+
+      <!-- Right Actions (Balance & Avatar) -->
+      <div class="header-actions" id="header-actions-area">
+                <!-- Interactive Font Picker -->
+        <button class="font-selector-pill" id="font-picker-btn" onclick="toggleFontPicker(event)" title="Change Theme Font">
+          <i class="fa-solid fa-font"></i>
+          <span>Font</span>
+        </button>
+
+        <div class="font-picker-menu" id="font-picker-dropdown">
+          <div style="font-size: 0.72rem; font-weight: 800; color: var(--text-dark); text-transform: uppercase; letter-spacing: 0.8px; padding: 4px 8px 8px; border-bottom: 1px solid var(--border-card); margin-bottom: 6px;">
+            Choose Typography
+          </div>
+          <div id="font-picker-list"></div>
+        </div>
+        <div class="coin-pill" onclick="openDepositModal()">
+          <div class="coin-icon">₱</div>
+          <span id="nav-coin-val">0.00</span>
+        </div>
+        <button class="user-avatar-btn" id="avatar-btn" onclick="toggleUserMenu()">U</button>
+      </div>
+    </div>
+  </header>
+
+  <div class="page-wrap">
+    <div class="container">
+
+      <!-- CID-STYLE HERO BANNER (Matches Reference Layout) -->
+      <div class="cid-hero-banner">
+        <div class="cid-hero-bg-accent"></div>
+        <div class="cid-hero-content" style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 14px;">
+          <div>
+            <div class="cid-hero-welcome">Welcome back</div>
+            <div class="cid-hero-username" id="dash-welcome-user">Member</div>
+          </div>
+          <div class="stealth-telemetry-hud">
+            <div><span class="stealth-pulse-dot"></span><span style="color: #94a3b8;">SYSTEM:</span> <strong style="color: var(--primary-orange);">UNDETECTED</strong></div>
+            <div class="stealth-hud-divider"></div>
+            <div><span style="color: #94a3b8;">BUILD:</span> <span style="font-family: var(--font-mono); color: #fff; font-weight: 700;">V7</span></div>
+            <div class="stealth-hud-divider"></div>
+            <div><span style="color: #94a3b8;">DISPATCH:</span> <span style="color: var(--primary-orange); font-weight: 700;">INSTANT</span></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- FLOATING WALLET & TOTAL KEYS CARD -->
+      <div class="cid-wallet-panel">
+        <div class="cid-wallet-grid">
+          <div class="cid-wallet-cell">
+            <div class="cid-cell-lbl">Wallet balance</div>
+            <div class="cid-cell-val cid-balance-val">₱<span id="dash-balance-val">0.00</span></div>
+          </div>
+          <div class="cid-wallet-cell">
+            <div class="cid-cell-lbl">Total keys</div>
+            <div class="cid-cell-val cid-keys-val" id="dash-total-keys-val">0</div>
+          </div>
+        </div>
+
+        <div class="cid-wallet-btn-row" style="grid-template-columns: 1fr;">
+          <button class="btn cid-btn-deposit" onclick="openDepositModal()" style="width: 100%; font-size: 1rem; padding: 14px 20px;">
+            <i class="fa-solid fa-arrow-down"></i> Deposit
+          </button>
+        </div>
+      </div>
+
+      <!-- 3-COLUMN STAT BAR (Users / Orders / Products) -->
+      <div class="cid-stats-bar">
+        <!-- 1. Users (Registered to the web) -->
+        <div class="cid-stat-col">
+          <div class="cid-stat-icon cid-icon-green">
+            <i class="fa-solid fa-user-group"></i>
+          </div>
+          <div class="cid-stat-number" id="stat-registered-users">0</div>
+          <div class="cid-stat-label">Users</div>
+        </div>
+
+        <div class="cid-stat-divider"></div>
+
+        <!-- 2. Orders -->
+        <div class="cid-stat-col">
+          <div class="cid-stat-icon cid-icon-green">
+            <i class="fa-solid fa-check"></i>
+          </div>
+          <div class="cid-stat-number" id="stat-total-orders">0</div>
+          <div class="cid-stat-label">Orders</div>
+        </div>
+
+        <div class="cid-stat-divider"></div>
+
+        <!-- 3. Products -->
+        <div class="cid-stat-col">
+          <div class="cid-stat-icon cid-icon-green">
+            <i class="fa-solid fa-key"></i>
+          </div>
+          <div class="cid-stat-number" id="stat-total-products">1</div>
+          <div class="cid-stat-label">Products</div>
+        </div>
+      </div>
+
+      <!-- FEATURED PRODUCTS -->
+      <div class="dash-section" style="margin-bottom: 28px;">
+        <div class="featured-header-row">
+          <div class="featured-header-titles">
+            <div class="kicker-pill">
+              <i class="fa-solid fa-fire-flame-curved" style="color: var(--primary-orange);"></i> POPULAR
+            </div>
+            <h2 class="featured-heading">Featured Products</h2>
+          </div>
+          <a href="/products" class="btn-all-products">
+            ALL <i class="fa-solid fa-arrow-right" style="font-size: 0.75rem; margin-left: 4px;"></i>
+          </a>
+        </div>
+
+        <div id="featured-products-grid" class="featured-products-grid">
+          <!-- Populated dynamically via /api/catalog -->
+          <div class="featured-grid-skeleton">
+            <div class="featured-card-skel"></div>
+            <div class="featured-card-skel"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- RECENT ORDERS (Screenshot 1) -->
+      <div class="dash-section" id="section-orders">
+        <div class="section-title-row">
+          <div class="section-title">
+            <svg class="section-title-icon" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="m21 2-2 2m-6 6a5 5 0 1 1-7-7 5 5 0 0 1 7 7zm0 0L19 7l3 3-2 2-2-2-2 2z"/></svg>
+            RECENT ORDERS
+          </div>
+          <a href="/products" class="btn btn-withdraw btn-sm">VIEW ALL</a>
+        </div>
+
+        <div class="card-panel" id="recent-orders-box">
+          <div class="empty-state">
+            <p>Loading orders...</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- RECENT TRANSACTIONS (Screenshot 1) -->
+      <div class="dash-section">
+        <div class="section-title-row">
+          <div class="section-title">
+            <svg class="section-title-icon" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
+            RECENT TRANSACTIONS
+          </div>
+        </div>
+
+        <div class="card-panel" id="recent-tx-box">
+          <div class="empty-state">
+            <p>Loading transactions...</p>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- DEPOSIT MODAL (PAYMONGO) -->
+  <div class="modal-overlay" id="deposit-modal">
+    <div class="modal-box">
+      <button class="modal-close-btn" onclick="closeDepositModal()">&times;</button>
+      
+      <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 4px;">
+        <i class="fa-solid fa-bolt" style="font-size: 1.25rem; color: var(--primary-orange);"></i>
+        <h3 style="font-size: 1.3rem; font-weight: 800; text-transform: uppercase;">Deposit Credits</h3>
+      </div>
+      <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 20px;">Top-up your wallet instantly via PayMongo (GCash, Maya, GrabPay, Credit/Debit Cards).</p>
+
+      <div style="margin-bottom: 18px;">
+        <label style="font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; color: var(--text-dark); display: block; margin-bottom: 10px;">Select Credits to Add</label>
+        <div class="deposit-presets-grid" style="grid-template-columns: repeat(3, 1fr); gap: 10px;">
+          <button class="preset-chip" data-amount="70">₱70</button>
+          <button class="preset-chip active" data-amount="100">₱100</button>
+          <button class="preset-chip" data-amount="150">₱150</button>
+          <button class="preset-chip" data-amount="200">₱200</button>
+          <button class="preset-chip" data-amount="250">₱250</button>
+          <button class="preset-chip" data-amount="320">₱320</button>
+          <button class="preset-chip" data-amount="500">₱500</button>
+          <button class="preset-chip" data-amount="700">₱700</button>
+          <button class="preset-chip" data-amount="1000">₱1000</button>
+        </div>
+      </div>
+
+      <div style="margin-bottom: 20px;">
+        <label style="font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; color: var(--text-dark); display: block; margin-bottom: 8px;">Selected Amount in PHP (₱)</label>
+        <input type="number" id="deposit-amt-input" class="deposit-input" value="100" readonly style="background: #192134; cursor: default;">
+      </div>
+
+      <button id="btn-paymongo-checkout" class="btn btn-deposit" style="width: 100%; border-radius: var(--radius-sm); padding: 14px;" onclick="proceedPaymongoCheckout()">
+        <i class="fa-solid fa-credit-card" style="margin-right: 6px;"></i> DEPOSIT VIA PAYMONGO (GCASH / MAYA)
+      </button>
+    </div>
+  </div>
+
+  <div id="toast-container" class="toast-box"></div>
+
+  <script src="/static/js/app.js"></script>
+  <script>
+    function scrollToOrders() {
+      document.getElementById('section-orders').scrollIntoView({ behavior: 'smooth' });
+    }
+    function openDownloadModal() {
+      window.open('https://t.me/ovkfiles', '_blank');
+    }
+    function openWithdrawModal() {
+      showToast('Withdrawals are processed manually for affiliates. Opening support...', 'info');
+      setTimeout(() => window.open('https://t.me/kovalucy', '_blank'), 600);
+    }
+    function openSupportModal() {
+      const modal = document.getElementById('support-modal');
+      if (modal) modal.classList.add('active');
+      else window.open('https://t.me/kovalucy', '_blank');
+    }
+  </script>
+
+  <!-- ========================================== -->
+  <!-- MODAL: SUPPORT & HELP (Reference Design) -->
+  <!-- ========================================== -->
+  <div class="modal-overlay" id="support-modal">
+    <div class="modal-box support-modal-box">
+      <button class="modal-close-btn" onclick="closeSupportModal()">&times;</button>
+      
+      <div class="support-modal-header">
+        <h2 class="support-main-title">Support &amp; Help</h2>
+        <p class="support-main-subtext">Get help with orders, keys, or account issues.</p>
+      </div>
+
+      <div class="support-faq-list">
+        <!-- 1. License key delivery -->
+        <div class="support-faq-item open" onclick="toggleFaqItem(this)">
+          <div class="faq-item-head">
+            <div class="faq-head-left">
+              <div class="faq-icon-box icon-purple">
+                <i class="fa-solid fa-key"></i>
+              </div>
+              <div>
+                <div class="faq-question">How do I receive my license key?</div>
+                <div class="faq-hint">Instant delivery after purchase</div>
+              </div>
+            </div>
+            <div class="faq-chevron"><i class="fa-solid fa-chevron-down"></i></div>
+          </div>
+          <div class="faq-item-body">
+            After a successful purchase, your license key is immediately visible in <strong>My Orders</strong> on your dashboard. You can copy it directly from there. Keys are never sent by email — always check your Orders section.
+          </div>
+        </div>
+
+        <!-- 2. Deposit time -->
+        <div class="support-faq-item" onclick="toggleFaqItem(this)">
+          <div class="faq-item-head">
+            <div class="faq-head-left">
+              <div class="faq-icon-box icon-green">
+                <i class="fa-solid fa-wallet"></i>
+              </div>
+              <div>
+                <div class="faq-question">How long does a deposit take?</div>
+                <div class="faq-hint">Deposit processing time</div>
+              </div>
+            </div>
+            <div class="faq-chevron"><i class="fa-solid fa-chevron-down"></i></div>
+          </div>
+          <div class="faq-item-body">
+            Deposits via PayMongo (GCash, Maya, and Card) are fully automated and credited within seconds. If you ever have a pending transaction, refresh your balance or contact admin with your receipt.
+          </div>
+        </div>
+
+        <!-- 3. Refund policy -->
+        <div class="support-faq-item" onclick="toggleFaqItem(this)">
+          <div class="faq-item-head">
+            <div class="faq-head-left">
+              <div class="faq-icon-box icon-red">
+                <i class="fa-solid fa-rotate-left"></i>
+              </div>
+              <div>
+                <div class="faq-question">Can I get a refund?</div>
+                <div class="faq-hint">Refund policy</div>
+              </div>
+            </div>
+            <div class="faq-chevron"><i class="fa-solid fa-chevron-down"></i></div>
+          </div>
+          <div class="faq-item-body">
+            Due to the digital nature of instant license keys, all sales are final once the key is generated and revealed. Please ensure you are purchasing the right tier for your device before confirming.
+          </div>
+        </div>
+
+        <!-- 4. Payment Security -->
+        <div class="support-faq-item" onclick="toggleFaqItem(this)">
+          <div class="faq-item-head">
+            <div class="faq-head-left">
+              <div class="faq-icon-box icon-amber">
+                <i class="fa-solid fa-shield-halved"></i>
+              </div>
+              <div>
+                <div class="faq-question">Is my payment secure?</div>
+                <div class="faq-hint">Security &amp; privacy</div>
+              </div>
+            </div>
+            <div class="faq-chevron"><i class="fa-solid fa-chevron-down"></i></div>
+          </div>
+          <div class="faq-item-body">
+            Yes! All payment channels are processed directly through PayMongo encrypted gateways. We never see or store your payment passwords or PIN numbers.
+          </div>
+        </div>
+      </div>
+
+      <!-- Still need help bottom box -->
+      <div class="support-bottom-card">
+        <div class="support-agent-icon">
+          <i class="fa-solid fa-headset"></i>
+        </div>
+        <h3 class="support-bottom-title">Still need help?</h3>
+        <p class="support-bottom-sub">Our support team is available to assist you. Reach out through any channel below.</p>
+        <div class="support-action-buttons">
+          <a href="https://t.me/kovalucy" target="_blank" class="btn-support-channel btn-tg">
+            <i class="fa-brands fa-telegram"></i> Telegram
+          </a>
+          <a href="https://t.me/ovkfiles" target="_blank" class="btn-support-channel btn-files">
+            <i class="fa-solid fa-folder-open"></i> OVK Files
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</body>
+</html>

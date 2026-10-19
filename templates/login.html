@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sign In / Register | OVKSHOP</title>
+  <link rel="stylesheet" href="/static/css/style.css">
+  <style>
+    .auth-wrapper {
+      min-height: calc(100vh - 72px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 40px 20px;
+      position: relative;
+    }
+    .auth-wrapper::before {
+      content: '';
+      position: absolute;
+      width: 440px;
+      height: 440px;
+      background: radial-gradient(circle, rgba(255, 255, 255, 0.12) 0%, transparent 70%);
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      pointer-events: none;
+      z-index: 0;
+    }
+    .auth-card {
+      background: rgba(13, 16, 23, 0.95);
+      border: 1px solid var(--border-card);
+      border-top: 3px solid var(--primary-orange);
+      border-radius: var(--radius-sm);
+      padding: 38px;
+      width: 100%;
+      max-width: 440px;
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.85), 0 0 25px rgba(255, 255, 255, 0.08);
+      position: relative;
+      z-index: 1;
+    }
+    .auth-tabs {
+      display: flex;
+      background: #090c12;
+      border: 1px solid var(--border-card);
+      padding: 4px;
+      border-radius: var(--radius-sm);
+      margin-bottom: 28px;
+    }
+    .auth-tab {
+      flex: 1;
+      padding: 10px;
+      border-radius: 4px;
+      text-align: center;
+      font-family: var(--font-heading);
+      font-size: 0.88rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: var(--text-muted);
+      cursor: pointer;
+      border: none;
+      background: transparent;
+      transition: all 0.2s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+    }
+    .auth-tab.active {
+      background: linear-gradient(135deg, var(--primary-orange), var(--primary-orange-hover));
+      color: #000000;
+      box-shadow: 0 2px 14px var(--primary-orange-glow);
+    }
+    .auth-input-group {
+      position: relative;
+      margin-bottom: 18px;
+    }
+    .auth-input-icon {
+      position: absolute;
+      left: 14px;
+      top: 38px;
+      color: var(--text-dark);
+      font-size: 0.9rem;
+      pointer-events: none;
+    }
+    .auth-input-field {
+      width: 100%;
+      padding: 13px 14px 13px 40px;
+      background: #080b10;
+      border: 1.5px solid var(--border-card);
+      border-radius: var(--radius-sm);
+      color: #fff;
+      font-size: 0.95rem;
+      font-family: inherit;
+      outline: none;
+      transition: all 0.2s ease;
+    }
+    .auth-input-field:focus {
+      border-color: var(--primary-orange);
+      background: #0c1017;
+      box-shadow: 0 0 14px var(--primary-orange-glow);
+    }
+    .password-toggle-btn {
+      position: absolute;
+      right: 14px;
+      top: 38px;
+      background: transparent;
+      border: none;
+      color: var(--text-dark);
+      cursor: pointer;
+      font-size: 0.9rem;
+      transition: color 0.2s;
+    }
+    .password-toggle-btn:hover {
+      color: var(--primary-orange);
+    }
+    .auth-form-label {
+      display: block;
+      font-size: 0.72rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.6px;
+      color: var(--text-muted);
+      margin-bottom: 6px;
+    }
+    .auth-security-badges {
+      margin-top: 24px;
+      padding-top: 18px;
+      border-top: 1px solid rgba(255, 255, 255, 0.08);
+      display: flex;
+      justify-content: space-around;
+      gap: 10px;
+      font-size: 0.72rem;
+      color: var(--text-dark);
+      font-weight: 600;
+      flex-wrap: wrap;
+    }
+    .auth-sec-item {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Navbar -->
+  <header class="site-header">
+    <div class="container header-container" style="justify-content: center;">
+      <a href="/dashboard" class="brand-logo">
+        <img src="/static/images/logo.png" alt="OVK Logo" class="brand-logo-img">
+        <span class="brand-logo-text">OVK HAX</span>
+      </a>
+    </div>
+  </header>
+
+  <div class="auth-wrapper">
+    <div class="auth-card">
+      
+      <!-- Pill Tabs -->
+      <div class="auth-tabs">
+        <button class="auth-tab active" id="tab-login" onclick="switchTab('login')">
+          <i class="fa-solid fa-right-to-bracket"></i> Sign In
+        </button>
+        <button class="auth-tab" id="tab-register" onclick="switchTab('register')">
+          <i class="fa-solid fa-user-plus"></i> Create Account
+        </button>
+      </div>
+
+      <!-- LOGIN FORM -->
+      <form id="form-login" onsubmit="handleLogin(event)">
+        <div style="margin-bottom: 22px;">
+          <h2 style="font-family: var(--font-display); font-size: 2.5rem; letter-spacing: 1px; color: #fff; margin-bottom: 4px; line-height: 1;">USER SIGN IN</h2>
+          <p style="color: var(--text-muted); font-size: 0.85rem;">Authenticate to access license inventory &amp; wallet.</p>
+        </div>
+
+        <div class="auth-input-group">
+          <label class="auth-form-label" for="login-identifier">Username or Email</label>
+          <i class="fa-solid fa-user auth-input-icon"></i>
+          <input type="text" id="login-identifier" class="auth-input-field" placeholder="Enter username or email" required autocomplete="username">
+        </div>
+
+        <div class="auth-input-group">
+          <label class="auth-form-label" for="login-password">Password</label>
+          <i class="fa-solid fa-lock auth-input-icon"></i>
+          <input type="password" id="login-password" class="auth-input-field" placeholder="Enter your password" required autocomplete="current-password">
+          <button type="button" class="password-toggle-btn" onclick="togglePasswordVisibility('login-password', this)">
+            <i class="fa-solid fa-eye"></i>
+          </button>
+        </div>
+
+        <button type="submit" id="btn-login-submit" class="btn btn-deposit" style="width: 100%; border-radius: var(--radius-sm); padding: 14px; font-weight: 800; font-size: 0.95rem; margin-top: 14px;">
+          <i class="fa-solid fa-right-to-bracket" style="margin-right: 6px;"></i> SIGN IN
+        </button>
+      </form>
+
+      <!-- REGISTER FORM -->
+      <form id="form-register" style="display: none;" onsubmit="handleRegister(event)">
+        <div style="margin-bottom: 22px;">
+          <h2 style="font-family: var(--font-display); font-size: 2.5rem; letter-spacing: 1px; color: #fff; margin-bottom: 4px; line-height: 1;">CREATE ACCOUNT</h2>
+          <p style="color: var(--text-muted); font-size: 0.85rem;">Fast enrollment. Add credits &amp; receive keys automatically.</p>
+        </div>
+
+        <div class="auth-input-group">
+          <label class="auth-form-label" for="reg-username">Username</label>
+          <i class="fa-solid fa-user auth-input-icon"></i>
+          <input type="text" id="reg-username" class="auth-input-field" placeholder="Pick a username" required minlength="3" autocomplete="username">
+        </div>
+
+        <div class="auth-input-group">
+          <label class="auth-form-label" for="reg-email">Email Address</label>
+          <i class="fa-solid fa-envelope auth-input-icon"></i>
+          <input type="email" id="reg-email" class="auth-input-field" placeholder="yourname@gmail.com" required autocomplete="email">
+        </div>
+
+        <div class="auth-input-group">
+          <label class="auth-form-label" for="reg-password">Password (min 6 characters)</label>
+          <i class="fa-solid fa-lock auth-input-icon"></i>
+          <input type="password" id="reg-password" class="auth-input-field" placeholder="Create a password" required minlength="6" autocomplete="new-password">
+          <button type="button" class="password-toggle-btn" onclick="togglePasswordVisibility('reg-password', this)">
+            <i class="fa-solid fa-eye"></i>
+          </button>
+        </div>
+
+        <button type="submit" id="btn-register-submit" class="btn btn-deposit" style="width: 100%; border-radius: var(--radius-sm); padding: 14px; font-weight: 800; font-size: 0.95rem; margin-top: 14px;">
+          <i class="fa-solid fa-user-plus" style="margin-right: 6px;"></i> CREATE ACCOUNT
+        </button>
+      </form>
+
+      <!-- Security Trust Badges (Instant, Verified, Support) -->
+      <div class="auth-security-badges">
+        <div class="auth-sec-item"><i class="fa-solid fa-bolt" style="color: var(--primary-orange);"></i> Instant</div>
+        <div class="auth-sec-item"><i class="fa-solid fa-shield-halved" style="color: #f8fafc;"></i> Verified</div>
+        <div class="auth-sec-item"><i class="fa-solid fa-headset" style="color: var(--primary-orange);"></i> Support</div>
+      </div>
+
+    </div>
+  </div>
+
+  <div id="toast-container" class="toast-box"></div>
+
+  <script>
+    const urlParams = new URLSearchParams(window.location.search);
+    if (urlParams.get('tab') === 'register') {
+      switchTab('register');
+    }
+
+    function switchTab(tab) {
+      const tabLogin = document.getElementById('tab-login');
+      const tabReg = document.getElementById('tab-register');
+      const formLogin = document.getElementById('form-login');
+      const formReg = document.getElementById('form-register');
+
+      if (tab === 'login') {
+        tabLogin.classList.add('active');
+        tabReg.classList.remove('active');
+        formLogin.style.display = 'block';
+        formReg.style.display = 'none';
+      } else {
+        tabLogin.classList.remove('active');
+        tabReg.classList.add('active');
+        formLogin.style.display = 'none';
+        formReg.style.display = 'block';
+      }
+    }
+
+    function togglePasswordVisibility(fieldId, btn) {
+      const input = document.getElementById(fieldId);
+      const icon = btn.querySelector('i');
+      if (input.type === 'password') {
+        input.type = 'text';
+        icon.className = 'fa-solid fa-eye-slash';
+      } else {
+        input.type = 'password';
+        icon.className = 'fa-solid fa-eye';
+      }
+    }
+
+    async function handleLogin(e) {
+      e.preventDefault();
+      const identifier = document.getElementById('login-identifier').value.trim();
+      const password = document.getElementById('login-password').value;
+      const btn = document.getElementById('btn-login-submit');
+
+      btn.disabled = true;
+      btn.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin"></i> Verifying...';
+
+      try {
+        const res = await fetch('/api/auth/login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ identifier, password })
+        });
+        const data = await res.json();
+
+        if (!res.ok) {
+          showToast(data.error || 'Invalid credentials. Please verify your details.', 'error');
+          btn.disabled = false;
+          btn.innerHTML = '<i class="fa-solid fa-right-to-bracket" style="margin-right: 6px;"></i> SIGN IN';
+          return;
+        }
+
+        showToast('Login successful! Redirecting...', 'success');
+        const targetUrl = urlParams.get('redirect') || (data.user.role === 'admin' ? '/admin' : '/dashboard');
+        setTimeout(() => {
+          window.location.href = targetUrl;
+        }, 500);
+      } catch (err) {
+        showToast('Network error during login.', 'error');
+        btn.disabled = false;
+        btn.innerHTML = '<i class="fa-solid fa-right-to-bracket" style="margin-right: 6px;"></i> SIGN IN';
+      }
+    }
+
+    async function handleRegister(e) {
+      e.preventDefault();
+      const username = document.getElementById('reg-username').value.trim();
+      const email = document.getElementById('reg-email').value.trim();
+      const password = document.getElementById('reg-password').value;
+      const btn = document.getElementById('btn-register-submit');
+
+      btn.disabled = true;
+      btn.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin"></i> Creating account...';
+
+      try {
+        const res = await fetch('/api/auth/register', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ username, email, password })
+        });
+        const data = await res.json();
+
+        if (!res.ok) {
+          showToast(data.error || 'Registration failed', 'error');
+          btn.disabled = false;
+          btn.innerHTML = '<i class="fa-solid fa-user-plus" style="margin-right: 6px;"></i> CREATE ACCOUNT';
+          return;
+        }
+
+        // Reset registration button & clear password
+        btn.disabled = false;
+        btn.innerHTML = '<i class="fa-solid fa-user-plus" style="margin-right: 6px;"></i> CREATE ACCOUNT';
+        document.getElementById('reg-password').value = '';
+
+        // Switch to Login tab and prefill username
+        switchTab('login');
+        document.getElementById('login-identifier').value = username;
+        document.getElementById('login-password').value = '';
+        document.getElementById('login-password').focus();
+
+        showToast('Account created successfully! Please enter your password to sign in.', 'success');
+      } catch (err) {
+        showToast('Network error during registration.', 'error');
+        btn.disabled = false;
+        btn.innerHTML = '<i class="fa-solid fa-user-plus" style="margin-right: 6px;"></i> CREATE ACCOUNT';
+      }
+    }
+
+    function showToast(msg, type = 'info') {
+      let box = document.getElementById('toast-container');
+      if (!box) {
+        box = document.createElement('div');
+        box.id = 'toast-container';
+        box.className = 'toast-box';
+        document.body.appendChild(box);
+      }
+      const toast = document.createElement('div');
+      toast.className = `toast-msg ${type}`;
+      toast.innerText = msg;
+      box.appendChild(toast);
+      setTimeout(() => {
+        toast.style.opacity = '0';
+        setTimeout(() => toast.remove(), 300);
+      }, 3500);
+    }
+  </script>
+</body>
+</html>

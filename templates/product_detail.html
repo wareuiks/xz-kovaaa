@@ -1,0 +1,569 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>OVK Premium - CODMGR | OVKSHOP</title>
+  <meta name="description" content="Choose duration and instantly receive your OVK license key.">
+  <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body>
+
+  <!-- Site Header (Screenshot 3 header) -->
+  <header class="site-header">
+    <div class="container header-container">
+      <a href="/dashboard" class="brand-logo">
+        <img src="/static/images/logo.png" alt="OVK Logo" class="brand-logo-img">
+        <span class="brand-logo-text">OVK HAX</span>
+      </a>
+
+      <!-- Pill Nav Bar -->
+      <nav class="nav-pills">
+        <div class="nav-pill-item"><a href="/dashboard">HOME</a></div>
+        <div class="nav-pill-item active"><a href="/products" class="active">PRODUCTS</a></div>
+        <div class="nav-pill-item"><a href="/tutorial">TUTORIAL</a></div>
+        <div class="nav-pill-item"><a href="javascript:void(0)" onclick="openSupportModal()">SUPPORT</a></div>
+      </nav>
+
+      <!-- Right Actions (Balance & Avatar) -->
+      <div class="header-actions" id="header-actions-area">
+                <!-- Interactive Font Picker -->
+        <button class="font-selector-pill" id="font-picker-btn" onclick="toggleFontPicker(event)" title="Change Theme Font">
+          <i class="fa-solid fa-font"></i>
+          <span>Font</span>
+        </button>
+
+        <div class="font-picker-menu" id="font-picker-dropdown">
+          <div style="font-size: 0.72rem; font-weight: 800; color: var(--text-dark); text-transform: uppercase; letter-spacing: 0.8px; padding: 4px 8px 8px; border-bottom: 1px solid var(--border-card); margin-bottom: 6px;">
+            Choose Typography
+          </div>
+          <div id="font-picker-list"></div>
+        </div>
+        <div class="coin-pill" onclick="openDepositModal()">
+          <div class="coin-icon">₱</div>
+          <span id="nav-coin-val">0.00</span>
+        </div>
+        <button class="user-avatar-btn" id="avatar-btn" onclick="toggleUserMenu()">U</button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Product Detail Container (Matches Screenshot 3) -->
+  <div class="page-wrap">
+    <div class="container product-detail-wrap">
+      
+      <!-- Unified Compact Banner & Title Card -->
+      <div class="product-banner-card compact-product-banner">
+        <img id="detail-banner-img" src="/static/images/product1.jpg" alt="CODMGR Banner" class="product-banner-img" onerror="this.src='/static/images/product1.jpg'">
+        <div class="product-banner-overlay-title">
+          <h1 class="product-main-heading" id="detail-title-heading">OVK Premium - CODMGR</h1>
+        </div>
+      </div>
+
+      <!-- Duration & Price Selection Card (Screenshot 3) -->
+      <div class="duration-selector-card">
+        <div class="duration-section-heading">CHOOSE DURATION & PRICE</div>
+
+        <div class="duration-options-list" id="duration-options-list">
+          <!-- Dynamically populated -->
+          <div style="text-align: center; color: var(--text-dark); padding: 30px;">Loading options...</div>
+        </div>
+
+        <!-- Selected Summary Bar (Screenshot 3) -->
+        <div class="selected-summary-bar">
+          <div>
+            <div class="selected-summary-label">SELECTED</div>
+            <div class="selected-summary-name" id="selected-summary-name">1 Day</div>
+          </div>
+          <div class="selected-summary-price" id="selected-summary-price">₱50.00</div>
+        </div>
+
+        <!-- User Wallet Balance Row -->
+        <div class="product-action-row">
+          <div class="product-user-balance">
+            Wallet Balance: <span id="detail-user-balance-val">0.00 Credits</span>
+          </div>
+          <button class="btn btn-sm btn-orange-outline" onclick="openDepositModal(selectedTier ? selectedTier.price : 100)" style="font-size: 0.75rem; padding: 4px 10px;">
+            <i class="fa-solid fa-plus"></i> Add Funds
+          </button>
+        </div>
+
+        <!-- Primary Action Button (Wallet Credit Purchase) -->
+        <div style="margin-top: 6px;">
+          <!-- Wallet Buy / Action Button -->
+          <button id="btn-main-action" class="btn-purchase-action insufficient" onclick="handleMainActionClick()">
+            <i class="fa-solid fa-bolt"></i> TOP-UP &amp; BUY KEY
+          </button>
+        </div>
+
+        <!-- Trust Micro Badges (Screenshot 3) -->
+        <div class="trust-badges-row">
+          <div class="trust-badge-item">
+            <i class="fa-solid fa-bolt" style="color: var(--primary-orange);"></i> Instant
+          </div>
+          <div class="trust-badge-item">
+            <i class="fa-solid fa-shield-halved" style="color: var(--badge-green);"></i> Verified
+          </div>
+          <div class="trust-badge-item">
+            <i class="fa-solid fa-headset" style="color: var(--primary-orange);"></i> Support
+          </div>
+        </div>
+
+        <!-- Delivered Key Card Box (Appears after buying a key) -->
+        <div id="delivered-key-card-box" style="display: none; margin-top: 24px; background: #0c121e; border: 1.5px solid var(--badge-green); border-radius: var(--radius-md); padding: 22px; box-shadow: 0 8px 30px rgba(255, 255, 255, 0.25);">
+          <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px;">
+            <div style="display: flex; align-items: center; gap: 8px;">
+              <span style="background: rgba(255, 255, 255, 0.2); color: #f8fafc; border: 1px solid rgba(255, 255, 255, 0.4); font-size: 0.72rem; font-weight: 800; padding: 4px 10px; border-radius: var(--radius-full); text-transform: uppercase;">
+                <i class="fa-solid fa-check"></i> KEY PURCHASED & DELIVERED
+              </span>
+            </div>
+            <span id="card-order-id" style="font-family: var(--font-mono); font-size: 0.75rem; color: var(--text-muted);"></span>
+          </div>
+
+          <div style="background: #060911; border: 1px dashed rgba(255, 255, 255, 0.5); border-radius: var(--radius-sm); padding: 14px 18px; margin-bottom: 16px; display: flex; align-items: center; justify-content: space-between; gap: 10px; flex-wrap: wrap;">
+            <span id="card-key-display" style="font-family: var(--font-mono); font-size: 1.15rem; font-weight: 800; color: #fff; letter-spacing: 1px; word-break: break-all;"></span>
+            <button id="btn-copy-card-key" onclick="copyCardKey()" class="btn btn-deposit btn-sm" style="flex-shrink: 0; padding: 9px 18px; font-weight: 800;">
+              <i class="fa-solid fa-copy" style="margin-right: 4px;"></i> Copy Key
+            </button>
+          </div>
+
+          <!-- Direct Download & Support Buttons -->
+          <div style="display: flex; gap: 10px; margin-bottom: 16px; flex-wrap: wrap;">
+            <a href="https://t.me/ovkfiles" target="_blank" class="btn" style="flex: 1; min-width: 200px; background: linear-gradient(135deg, #0088cc, #005580); color: #fff; font-weight: 800; padding: 12px; border-radius: var(--radius-sm); text-decoration: none; display: flex; align-items: center; justify-content: center; gap: 8px; box-shadow: 0 4px 15px rgba(0, 136, 204, 0.35);">
+              <i class="fa-brands fa-telegram" style="font-size: 1.15rem;"></i> Download Loader & Files
+            </a>
+            <a href="https://t.me/kovalucy" target="_blank" class="btn btn-withdraw" style="flex: 1; min-width: 180px; padding: 12px; border-radius: var(--radius-sm); text-decoration: none; border-color: rgba(0, 136, 204, 0.4); color: #38bdf8; display: flex; align-items: center; justify-content: center; gap: 8px;">
+              <i class="fa-brands fa-telegram" style="font-size: 1.15rem;"></i> 24/7 Support (@kovalucy)
+            </a>
+          </div>
+
+          <!-- Activation Steps Guide -->
+          <div style="background: rgba(6, 11, 20, 0.85); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: var(--radius-sm); padding: 14px 16px; font-size: 0.82rem; line-height: 1.6; margin-bottom: 12px;">
+            <div style="font-weight: 800; color: #fff; margin-bottom: 6px; display: flex; align-items: center; gap: 6px;">
+              <i class="fa-solid fa-circle-info" style="color: var(--primary-orange);"></i> Quick Activation Steps:
+            </div>
+            <ol style="margin-left: 20px; color: var(--text-muted); margin-bottom: 0;">
+              <li>Click <strong style="color: #38bdf8;">Download Loader & Files</strong> above (Telegram: <span style="color: #fff;">t.me/ovkfiles</span>).</li>
+              <li>Install the loader APK on your device, launch it, and paste your license key above.</li>
+              <li>Launch your game. For questions, key transfers, or resets, message <a href="https://t.me/kovalucy" target="_blank" style="color: #38bdf8; text-decoration: underline;">@kovalucy</a>.</li>
+            </ol>
+          </div>
+
+          <div style="display: flex; align-items: center; justify-content: space-between; font-size: 0.8rem; color: var(--text-muted); flex-wrap: wrap; gap: 8px;">
+            <span><i class="fa-solid fa-circle-check" style="color: var(--badge-green); margin-right: 4px;"></i> Saved in your account history.</span>
+            <a href="/dashboard" style="color: var(--primary-orange); font-weight: 700;">View in Dashboard &rarr;</a>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Deposit Modal -->
+  <div class="modal-overlay" id="deposit-modal">
+    <div class="modal-box">
+      <button class="modal-close-btn" onclick="closeDepositModal()">&times;</button>
+      
+      <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 4px;">
+        <i class="fa-solid fa-bolt" style="font-size: 1.25rem; color: var(--primary-orange);"></i>
+        <h3 style="font-size: 1.3rem; font-weight: 800; text-transform: uppercase;">Deposit Credits</h3>
+      </div>
+      <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 20px;">Instant wallet top-up via PayMongo (GCash, Maya, GrabPay, Cards).</p>
+
+      <div style="margin-bottom: 18px;">
+        <label style="font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; color: var(--text-dark); display: block; margin-bottom: 10px;">Select Credits to Add</label>
+        <div class="deposit-presets-grid" style="grid-template-columns: repeat(3, 1fr); gap: 10px;">
+          <button class="preset-chip active" data-amount="100">₱100</button>
+          <button class="preset-chip" data-amount="200">₱200</button>
+          <button class="preset-chip" data-amount="300">₱300</button>
+          <button class="preset-chip" data-amount="500">₱500</button>
+          <button class="preset-chip" data-amount="700">₱700</button>
+          <button class="preset-chip" data-amount="1000">₱1000</button>
+        </div>
+      </div>
+
+      <div style="margin-bottom: 20px;">
+        <label style="font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; color: var(--text-dark); display: block; margin-bottom: 8px;">Selected Amount in PHP (₱)</label>
+        <input type="number" id="deposit-amt-input" class="deposit-input" value="100" readonly style="background: #192134; cursor: default;">
+      </div>
+
+      <button id="btn-paymongo-checkout" class="btn btn-deposit" style="width: 100%; border-radius: var(--radius-sm); padding: 14px;" onclick="proceedPaymongoCheckout()">
+        <i class="fa-solid fa-credit-card" style="margin-right: 6px;"></i> DEPOSIT VIA PAYMONGO (GCASH / MAYA)
+      </button>
+    </div>
+  </div>
+
+  <!-- Key Claim Modal (Success) -->
+  <div class="modal-overlay" id="key-success-modal">
+    <div class="modal-box" style="text-align: center; max-width: 480px;">
+      <div style="width: 56px; height: 56px; border-radius: 50%; background: rgba(255, 255, 255, 0.15); border: 1px solid rgba(255, 255, 255, 0.35); color: #f8fafc; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; margin: 0 auto 16px;">
+        <i class="fa-solid fa-check"></i>
+      </div>
+      <h3 style="font-size: 1.4rem; font-weight: 800; margin-bottom: 6px;">License Key Delivered!</h3>
+      <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 16px;">Your purchase was successful. Copy your key and get the files below:</p>
+
+      <div style="background: #0d111a; border: 1px dashed var(--primary-orange); border-radius: var(--radius-sm); padding: 16px; margin-bottom: 16px;">
+        <div id="delivered-key-text" style="font-family: var(--font-mono); font-size: 1.15rem; font-weight: 800; color: #fff; letter-spacing: 1px; word-break: break-all;"></div>
+      </div>
+
+      <div style="display: flex; gap: 10px; margin-bottom: 12px;">
+        <button class="btn btn-deposit" style="flex: 1;" onclick="copyDeliveredKey()"><i class="fa-solid fa-copy" style="margin-right: 6px;"></i> Copy Key</button>
+        <a href="https://t.me/ovkfiles" target="_blank" class="btn" style="flex: 1; background: #0088cc; color: #fff; font-weight: 700; text-decoration: none; display: flex; align-items: center; justify-content: center; gap: 6px;"><i class="fa-brands fa-telegram"></i> Download Files</a>
+      </div>
+
+      <div style="display: flex; gap: 10px;">
+        <a href="https://t.me/kovalucy" target="_blank" class="btn btn-withdraw" style="flex: 1; text-decoration: none; font-size: 0.8rem; color: #38bdf8;"><i class="fa-brands fa-telegram" style="margin-right: 4px;"></i> Support (@kovalucy)</a>
+        <a href="/dashboard" class="btn btn-withdraw" style="flex: 1; font-size: 0.8rem;"><i class="fa-solid fa-house" style="margin-right: 4px;"></i> Dashboard</a>
+      </div>
+    </div>
+  </div>
+
+  <div id="toast-container" class="toast-box"></div>
+
+  <script src="/static/js/app.js"></script>
+  <script>
+    const productIdParam = {{ item_id|tojson }};
+    let currentItem = null;
+    let selectedTier = null;
+    let currentUserBalance = 0;
+
+    document.addEventListener('DOMContentLoaded', async () => {
+      await loadProductDetailPage();
+    });
+
+    async function loadProductDetailPage() {
+      try {
+        const res = await fetch(`/api/catalog/${productIdParam}`);
+        if (!res.ok) {
+          window.location.href = '/products';
+          return;
+        }
+
+        const data = await res.json();
+        currentItem = data.product;
+
+        // Set Title & Banner
+        const catBadge = document.getElementById('detail-cat-badge');
+        if (catBadge) catBadge.innerText = currentItem.category;
+        document.getElementById('detail-title-heading').innerText = currentItem.title;
+        if (currentItem.image_url) {
+          document.getElementById('detail-banner-img').src = currentItem.image_url;
+        }
+
+        // Fetch User balance
+        await refreshUserBalance();
+
+        // Render Tiers
+        renderTierList();
+      } catch (err) {
+        showToast('Error loading product details', 'error');
+      }
+    }
+
+    async function refreshUserBalance() {
+      try {
+        const authRes = await fetch('/api/auth/me');
+        const authData = await authRes.json();
+        if (authData.authenticated) {
+          currentUserBalance = parseFloat(authData.user.balance) || 0;
+          const balEl = document.getElementById('detail-user-balance-val');
+          if (balEl) balEl.innerText = `${currentUserBalance.toFixed(2)} Credits`;
+        }
+      } catch(e) {}
+    }
+
+    function renderTierList() {
+      const container = document.getElementById('duration-options-list');
+      if (!currentItem || !currentItem.options || currentItem.options.length === 0) {
+        container.innerHTML = '<p style="color: var(--text-dark); text-align: center; padding: 20px;">No options available.</p>';
+        return;
+      }
+
+      // Default select the first tier
+      if (!selectedTier) {
+        selectedTier = currentItem.options[0];
+      }
+
+      container.innerHTML = currentItem.options.map(opt => {
+        const isSelected = selectedTier && selectedTier.id === opt.id;
+        const isOut = opt.stock <= 0;
+        const stockLabel = isOut ? 'Out of stock' : `${opt.stock} in stock`;
+        const stockClass = isOut ? 'out-of-stock' : '';
+
+        return `
+          <div class="duration-card-item ${isSelected ? 'selected' : ''}" onclick="selectTierCard(${opt.id})">
+            <div class="duration-card-left">
+              <div class="custom-radio">
+                <div class="custom-radio-dot"></div>
+              </div>
+              <div>
+                <div class="duration-item-name">${opt.duration}</div>
+                <div class="duration-item-sub">${opt.duration.toLowerCase()}</div>
+              </div>
+            </div>
+            <div class="duration-card-right">
+              <div class="duration-item-price">₱${opt.price.toFixed(2)}</div>
+              <div class="duration-item-stock ${stockClass}">${stockLabel}</div>
+            </div>
+          </div>
+        `;
+      }).join('');
+
+      updateActionState();
+    }
+
+    function selectTierCard(tierId) {
+      const tier = currentItem.options.find(o => o.id === tierId);
+      if (tier) {
+        selectedTier = tier;
+        renderTierList();
+      }
+    }
+
+    function updateActionState() {
+      if (!selectedTier) return;
+
+      // Update Selected bar
+      document.getElementById('selected-summary-name').innerText = selectedTier.duration;
+      document.getElementById('selected-summary-price').innerText = `₱${selectedTier.price.toFixed(2)}`;
+
+      const actionBtn = document.getElementById('btn-main-action');
+
+      if (!currentUser) {
+        actionBtn.className = 'btn-purchase-action insufficient';
+        actionBtn.disabled = false;
+        actionBtn.innerHTML = '<i class="fa-solid fa-right-to-bracket" style="margin-right: 6px;"></i> SIGN IN TO PURCHASE';
+      } else if (selectedTier.stock <= 0) {
+        actionBtn.className = 'btn-purchase-action disabled';
+        actionBtn.disabled = true;
+        actionBtn.innerHTML = '<i class="fa-solid fa-ban" style="margin-right: 6px;"></i> OUT OF STOCK';
+      } else if (currentUserBalance < selectedTier.price) {
+        const needed = (selectedTier.price - currentUserBalance).toFixed(2);
+        actionBtn.className = 'btn-purchase-action insufficient';
+        actionBtn.disabled = false;
+        actionBtn.innerHTML = `<i class="fa-solid fa-bolt" style="margin-right: 6px;"></i> TOP-UP CREDITS (NEED ₱${needed} MORE)`;
+      } else {
+        actionBtn.className = 'btn-purchase-action ready';
+        actionBtn.disabled = false;
+        actionBtn.innerHTML = `<i class="fa-solid fa-cart-shopping" style="margin-right: 6px;"></i> 1-CLICK BUY WITH CREDITS (₱${selectedTier.price.toFixed(2)})`;
+      }
+    }
+
+    async function handleMainActionClick() {
+      if (!selectedTier) return;
+
+      // If user is not logged in, enforce login first
+      if (!currentUser) {
+        showToast('Please sign in or create an account first.', 'info');
+        setTimeout(() => {
+          window.location.href = `/login?redirect=${encodeURIComponent(window.location.pathname)}`;
+        }, 500);
+        return;
+      }
+
+      if (selectedTier.stock <= 0) {
+        showToast('This tier is currently out of stock!', 'error');
+        return;
+      }
+
+      if (currentUserBalance < selectedTier.price) {
+        // Insufficient funds -> Open Deposit Modal with required tier price preselected
+        openDepositModal(selectedTier.price);
+        return;
+      }
+
+      // Sufficient credits -> Process purchase
+      const actionBtn = document.getElementById('btn-main-action');
+      actionBtn.disabled = true;
+      actionBtn.innerText = 'PURCHASING...';
+
+      try {
+        const res = await fetch('/api/purchase', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ product_id: selectedTier.id })
+        });
+        const data = await res.json();
+
+        if (!res.ok) {
+          showToast(data.error || 'Purchase failed', 'error');
+          updateActionState();
+          return;
+        }
+
+        // Extract key and order info safely from response
+        const keyString = data.license_key || (data.order && data.order.license_key) || '';
+        const orderId = data.order_id || (data.order && data.order.order_id) || '';
+
+        // 1. Show and populate On-Page Card Box directly below buttons
+        const cardBox = document.getElementById('delivered-key-card-box');
+        if (cardBox) {
+          document.getElementById('card-key-display').innerText = keyString;
+          document.getElementById('card-order-id').innerText = orderId ? `#${orderId}` : '';
+          cardBox.style.display = 'block';
+          cardBox.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+
+        // 2. Also populate modal
+        const modalKeyEl = document.getElementById('delivered-key-text');
+        if (modalKeyEl) modalKeyEl.innerText = keyString;
+        const modal = document.getElementById('key-success-modal');
+        if (modal) modal.classList.add('active');
+
+        // Refresh product stock details & wallet balance
+        await loadProductDetailPage();
+        showToast('License key delivered successfully!', 'success');
+      } catch (err) {
+        showToast('Purchase error occurred.', 'error');
+        updateActionState();
+      }
+    }
+
+    function copyCardKey() {
+      const key = document.getElementById('card-key-display').innerText;
+      const btn = document.getElementById('btn-copy-card-key');
+      if (key) {
+        navigator.clipboard.writeText(key).then(() => {
+          showToast('License key copied to clipboard!', 'success');
+          if (btn) {
+            const originalHtml = btn.innerHTML;
+            btn.innerHTML = '<i class="fa-solid fa-check" style="margin-right: 4px;"></i> Copied!';
+            btn.style.background = '#f8fafc';
+            setTimeout(() => {
+              btn.innerHTML = originalHtml;
+              btn.style.background = '';
+            }, 2000);
+          }
+        });
+      }
+    }
+
+    function copyDeliveredKey() {
+      const key = document.getElementById('delivered-key-text').innerText;
+      if (key) {
+        navigator.clipboard.writeText(key).then(() => {
+          showToast('License key copied to clipboard!', 'success');
+        });
+      }
+    }
+
+    function openSupportModal() {
+      const modal = document.getElementById('support-modal');
+      if (modal) modal.classList.add('active');
+      else window.open('https://t.me/kovalucy', '_blank');
+    }
+  </script>
+
+
+  <!-- ========================================== -->
+  <!-- MODAL: SUPPORT & HELP (Reference Design) -->
+  <!-- ========================================== -->
+  <div class="modal-overlay" id="support-modal">
+    <div class="modal-box support-modal-box">
+      <button class="modal-close-btn" onclick="closeSupportModal()">&times;</button>
+      
+      <div class="support-modal-header">
+        <h2 class="support-main-title">Support &amp; Help</h2>
+        <p class="support-main-subtext">Get help with orders, keys, or account issues.</p>
+      </div>
+
+      <div class="support-faq-list">
+        <!-- 1. License key delivery -->
+        <div class="support-faq-item open" onclick="toggleFaqItem(this)">
+          <div class="faq-item-head">
+            <div class="faq-head-left">
+              <div class="faq-icon-box icon-purple">
+                <i class="fa-solid fa-key"></i>
+              </div>
+              <div>
+                <div class="faq-question">How do I receive my license key?</div>
+                <div class="faq-hint">Instant delivery after purchase</div>
+              </div>
+            </div>
+            <div class="faq-chevron"><i class="fa-solid fa-chevron-down"></i></div>
+          </div>
+          <div class="faq-item-body">
+            After a successful purchase, your license key is immediately visible in <strong>My Orders</strong> on your dashboard. You can copy it directly from there. Keys are never sent by email — always check your Orders section.
+          </div>
+        </div>
+
+        <!-- 2. Deposit time -->
+        <div class="support-faq-item" onclick="toggleFaqItem(this)">
+          <div class="faq-item-head">
+            <div class="faq-head-left">
+              <div class="faq-icon-box icon-green">
+                <i class="fa-solid fa-wallet"></i>
+              </div>
+              <div>
+                <div class="faq-question">How long does a deposit take?</div>
+                <div class="faq-hint">Deposit processing time</div>
+              </div>
+            </div>
+            <div class="faq-chevron"><i class="fa-solid fa-chevron-down"></i></div>
+          </div>
+          <div class="faq-item-body">
+            Deposits via PayMongo (GCash, Maya, and Card) are fully automated and credited within seconds. If you ever have a pending transaction, refresh your balance or contact admin with your receipt.
+          </div>
+        </div>
+
+        <!-- 3. Refund policy -->
+        <div class="support-faq-item" onclick="toggleFaqItem(this)">
+          <div class="faq-item-head">
+            <div class="faq-head-left">
+              <div class="faq-icon-box icon-red">
+                <i class="fa-solid fa-rotate-left"></i>
+              </div>
+              <div>
+                <div class="faq-question">Can I get a refund?</div>
+                <div class="faq-hint">Refund policy</div>
+              </div>
+            </div>
+            <div class="faq-chevron"><i class="fa-solid fa-chevron-down"></i></div>
+          </div>
+          <div class="faq-item-body">
+            Due to the digital nature of instant license keys, all sales are final once the key is generated and revealed. Please ensure you are purchasing the right tier for your device before confirming.
+          </div>
+        </div>
+
+        <!-- 4. Payment Security -->
+        <div class="support-faq-item" onclick="toggleFaqItem(this)">
+          <div class="faq-item-head">
+            <div class="faq-head-left">
+              <div class="faq-icon-box icon-amber">
+                <i class="fa-solid fa-shield-halved"></i>
+              </div>
+              <div>
+                <div class="faq-question">Is my payment secure?</div>
+                <div class="faq-hint">Security &amp; privacy</div>
+              </div>
+            </div>
+            <div class="faq-chevron"><i class="fa-solid fa-chevron-down"></i></div>
+          </div>
+          <div class="faq-item-body">
+            Yes! All payment channels are processed directly through PayMongo encrypted gateways. We never see or store your payment passwords or PIN numbers.
+          </div>
+        </div>
+      </div>
+
+      <!-- Still need help bottom box -->
+      <div class="support-bottom-card">
+        <div class="support-agent-icon">
+          <i class="fa-solid fa-headset"></i>
+        </div>
+        <h3 class="support-bottom-title">Still need help?</h3>
+        <p class="support-bottom-sub">Our support team is available to assist you. Reach out through any channel below.</p>
+        <div class="support-action-buttons">
+          <a href="https://t.me/kovalucy" target="_blank" class="btn-support-channel btn-tg">
+            <i class="fa-brands fa-telegram"></i> Telegram
+          </a>
+          <a href="https://t.me/ovkfiles" target="_blank" class="btn-support-channel btn-files">
+            <i class="fa-solid fa-folder-open"></i> OVK Files
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</body>
+</html>

@@ -1,0 +1,636 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Dashboard & Stock Manager | OVKSHOP</title>
+  <link rel="stylesheet" href="/static/css/style.css">
+  <style>
+    .admin-stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 20px;
+      margin-bottom: 32px;
+    }
+    .admin-stat-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-card);
+      border-radius: var(--radius-md);
+      padding: 20px;
+    }
+    .admin-stat-val {
+      font-size: 1.8rem;
+      font-weight: 800;
+      font-family: var(--font-mono);
+      color: #fff;
+      margin-top: 4px;
+    }
+    .admin-stat-lbl {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    .stock-pill {
+      font-size: 0.75rem;
+      font-weight: 700;
+      padding: 3px 10px;
+      border-radius: var(--radius-full);
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+    }
+    .stock-pill.in-stock {
+      background: rgba(255, 255, 255, 0.15);
+      color: #f8fafc;
+      border: 1px solid rgba(255, 255, 255, 0.3);
+    }
+    .stock-pill.claimed {
+      background: rgba(239, 68, 68, 0.15);
+      color: #ef4444;
+      border: 1px solid rgba(239, 68, 68, 0.3);
+      text-decoration: line-through;
+    }
+    .filter-btn {
+      background: var(--bg-subtle);
+      border: 1px solid var(--border-subtle);
+      color: var(--text-muted);
+      padding: 6px 14px;
+      border-radius: var(--radius-sm);
+      font-size: 0.82rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+    .filter-btn.active, .filter-btn:hover {
+      background: rgba(255, 255, 255, 0.15);
+      border-color: var(--primary-orange);
+      color: var(--primary-orange);
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Header / Navbar -->
+  <header class="site-header">
+    <div class="container header-container">
+      <a href="/admin" class="brand-logo">OVK<span>.ADMIN</span></a>
+      <div style="display: flex; gap: 10px; align-items: center;">
+        <a href="/products" class="btn btn-withdraw btn-sm"><i class="fa-solid fa-arrow-left" style="margin-right: 4px;"></i> Storefront</a>
+        <a href="/dashboard" class="btn btn-withdraw btn-sm">User Dashboard</a>
+        <button class="btn btn-withdraw btn-sm" style="background: rgba(239, 68, 68, 0.15); color: #ef4444; border: 1px solid rgba(239, 68, 68, 0.4);" onclick="lockAdminSession()"><i class="fa-solid fa-lock" style="margin-right: 4px;"></i> Lock Admin</button>
+      </div>
+    </div>
+  </header>
+
+  <div class="page-wrap">
+    <div class="container" style="padding-top: 30px;">
+      
+      <div style="margin-bottom: 28px;">
+        <h1 style="font-size: 2.2rem; font-weight: 900; letter-spacing: -0.5px;">ADMIN STOCK & INVENTORY</h1>
+        <p style="color: var(--text-muted); font-size: 0.95rem;">Input real license keys, manage stock, and monitor claimed keys.</p>
+      </div>
+
+      <!-- Stats Overview -->
+      <div class="admin-stats-grid">
+        <div class="admin-stat-card">
+          <div class="admin-stat-lbl">Available Stock Keys</div>
+          <div class="admin-stat-val" style="color: var(--primary-orange);" id="stat-keys">0</div>
+        </div>
+        <div class="admin-stat-card">
+          <div class="admin-stat-lbl">Claimed / Sold Keys</div>
+          <div class="admin-stat-val" style="color: #ef4444;" id="stat-used-keys">0</div>
+        </div>
+        <div class="admin-stat-card">
+          <div class="admin-stat-lbl">Total Revenue</div>
+          <div class="admin-stat-val" style="color: #f8fafc;" id="stat-revenue">₱0.00</div>
+        </div>
+        <div class="admin-stat-card">
+          <div class="admin-stat-lbl">Total Orders</div>
+          <div class="admin-stat-val" style="color: #60a5fa;" id="stat-orders">0</div>
+        </div>
+      </div>
+
+      <!-- Live Stock By Tier Table -->
+      <div style="background: var(--bg-card); border: 1px solid var(--border-card); border-radius: var(--radius-md); padding: 24px; margin-bottom: 36px;">
+        <h2 style="font-size: 1.25rem; font-weight: 800; margin-bottom: 6px;"><i class="fa-solid fa-boxes-stacked" style="color: var(--primary-orange); margin-right: 8px;"></i> Live Tier Stock Status</h2>
+        <p style="color: var(--text-muted); font-size: 0.85rem; margin-bottom: 18px;">When users purchase, keys are handed out and automatically X'd out from inventory.</p>
+
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 14px;" id="tier-stock-cards">
+          <!-- Populated by JS -->
+        </div>
+      </div>
+
+      <!-- Import Keys & Adjust Balance Forms -->
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(360px, 1fr)); gap: 24px; margin-bottom: 36px;">
+        
+        <!-- Add Stock Form -->
+        <div style="background: var(--bg-card); border: 1px solid var(--border-card); border-radius: var(--radius-md); padding: 26px;">
+          <h2 style="font-size: 1.2rem; font-weight: 800; margin-bottom: 6px;"><i class="fa-solid fa-file-import" style="color: var(--primary-orange); margin-right: 8px;"></i> Input Keys to Stock</h2>
+          <p style="color: var(--text-muted); font-size: 0.85rem; margin-bottom: 18px;">Select a tier and paste your real keys (one per line). These will be given out to customers upon purchase.</p>
+
+          <form onsubmit="handleImportKeys(event)">
+            <div style="margin-bottom: 16px;">
+              <label style="font-size: 0.75rem; font-weight: 700; text-transform: uppercase; color: var(--text-dark); display: block; margin-bottom: 6px;">Select Product Tier</label>
+              <select id="key-product-select" class="deposit-input" style="margin-bottom: 0;" required>
+                <option value="">Loading tiers...</option>
+              </select>
+            </div>
+
+            <div style="margin-bottom: 16px;">
+              <label style="font-size: 0.75rem; font-weight: 700; text-transform: uppercase; color: var(--text-dark); display: block; margin-bottom: 6px;">License Keys (1 per line)</label>
+              <textarea id="key-bulk-textarea" class="deposit-input" rows="5" placeholder="OVK-3D-ABCD-1234&#10;OVK-3D-EFGH-5678" style="font-family: var(--font-mono); font-size: 0.85rem; height: 130px; resize: vertical; margin-bottom: 0;" required></textarea>
+            </div>
+
+            <button type="submit" id="btn-import-keys" class="btn btn-deposit" style="width: 100%; border-radius: var(--radius-sm); padding: 12px;">
+              <i class="fa-solid fa-plus" style="margin-right: 6px;"></i> Add Keys to Stock
+            </button>
+          </form>
+        </div>
+
+        <!-- Adjust Balance Form -->
+        <div style="background: var(--bg-card); border: 1px solid var(--border-card); border-radius: var(--radius-md); padding: 26px;">
+          <h2 style="font-size: 1.2rem; font-weight: 800; margin-bottom: 6px;"><i class="fa-solid fa-wallet" style="color: var(--primary-orange); margin-right: 8px;"></i> Manual Balance Adjustment</h2>
+          <p style="color: var(--text-muted); font-size: 0.85rem; margin-bottom: 18px;">Credit or debit a customer's wallet manually (e.g. for offline GCash receipts).</p>
+
+          <form onsubmit="handleAdjustBalance(event)">
+            <div style="margin-bottom: 16px;">
+              <label style="font-size: 0.75rem; font-weight: 700; text-transform: uppercase; color: var(--text-dark); display: block; margin-bottom: 6px;">Select Customer</label>
+              <select id="adj-user-id" class="deposit-input" style="margin-bottom: 0;" required>
+                <option value="">Loading users...</option>
+              </select>
+            </div>
+
+            <div style="margin-bottom: 16px;">
+              <label style="font-size: 0.75rem; font-weight: 700; text-transform: uppercase; color: var(--text-dark); display: block; margin-bottom: 6px;">Amount (PHP)</label>
+              <input type="number" id="adj-amount" class="deposit-input" step="1" placeholder="e.g. 100 or -50" style="margin-bottom: 0;" required>
+            </div>
+
+            <div style="margin-bottom: 16px;">
+              <label style="font-size: 0.75rem; font-weight: 700; text-transform: uppercase; color: var(--text-dark); display: block; margin-bottom: 6px;">Reason</label>
+              <input type="text" id="adj-reason" class="deposit-input" value="Admin Manual Credit" style="margin-bottom: 0;">
+            </div>
+
+            <button type="submit" id="btn-adjust-submit" class="btn btn-withdraw" style="width: 100%; border-radius: var(--radius-sm); padding: 12px; border-color: rgba(255, 255, 255, 0.4);">
+              <i class="fa-solid fa-check" style="margin-right: 6px;"></i> Apply Adjustment
+            </button>
+          </form>
+        </div>
+
+      </div>
+
+      <!-- License Key Inventory Table -->
+      <div style="background: var(--bg-card); border: 1px solid var(--border-card); border-radius: var(--radius-md); overflow: hidden; margin-bottom: 36px;">
+        <div style="padding: 20px 24px; border-bottom: 1px solid var(--border-card); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px;">
+          <div>
+            <h2 style="font-size: 1.25rem; font-weight: 800;"><i class="fa-solid fa-key" style="color: var(--primary-orange); margin-right: 8px;"></i> License Key Stock & Claimed Keys</h2>
+            <p style="font-size: 0.8rem; color: var(--text-muted); margin-top: 2px;">Inspect available keys vs. keys that have been purchased & X'd out.</p>
+          </div>
+
+          <div style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap;">
+            <button class="filter-btn active" id="btn-filter-all" onclick="filterKeys('all')">All</button>
+            <button class="filter-btn" id="btn-filter-available" onclick="filterKeys('available')">Available In Stock</button>
+            <button class="filter-btn" id="btn-filter-used" onclick="filterKeys('used')">Claimed / Given Out</button>
+            <button class="btn btn-withdraw btn-sm" style="color: var(--primary-orange); border-color: rgba(255, 255, 255, 0.4); font-size: 0.78rem; margin-left: 8px;" onclick="bringBackAllKeys()">
+              <i class="fa-solid fa-rotate-left" style="margin-right: 4px;"></i> Bring Back All Claimed Keys
+            </button>
+          </div>
+        </div>
+
+        <!-- BATCH ACTIONS TOOLBAR -->
+        <div id="batch-key-actions-bar" style="display: none; padding: 12px 24px; background: rgba(255, 255, 255, 0.06); border-bottom: 1px solid rgba(255, 255, 255, 0.2); align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px;">
+          <div style="display: flex; align-items: center; gap: 12px; font-size: 0.85rem; font-weight: 700;">
+            <span style="color: var(--primary-orange);"><i class="fa-solid fa-check-double" style="margin-right: 6px;"></i><span id="selected-keys-count">0</span> key(s) selected</span>
+            <button class="btn btn-withdraw btn-sm" onclick="clearSelectedKeys()" style="padding: 3px 8px; font-size: 0.72rem;">Deselect All</button>
+          </div>
+          <div style="display: flex; gap: 8px;">
+            <button class="btn btn-sm" style="background: rgba(239, 68, 68, 0.15); color: #ef4444; border: 1px solid rgba(239, 68, 68, 0.4); padding: 6px 14px; font-weight: 800;" onclick="deleteSelectedKeys()">
+              <i class="fa-solid fa-trash" style="margin-right: 6px;"></i> Delete Selected Keys
+            </button>
+          </div>
+        </div>
+
+        <div style="overflow-x: auto;">
+          <table style="width: 100%; border-collapse: collapse; font-size: 0.85rem;">
+            <thead>
+              <tr style="border-bottom: 1px solid var(--border-card); text-align: left; color: var(--text-dark); font-size: 0.75rem; text-transform: uppercase;">
+                <th style="padding: 14px 16px; width: 44px; text-align: center;">
+                  <input type="checkbox" id="check-all-keys" onchange="toggleSelectAllKeys(this)" style="cursor: pointer; accent-color: var(--primary-orange); width: 16px; height: 16px;">
+                </th>
+                <th style="padding: 14px 16px;">ID</th>
+                <th style="padding: 14px 20px;">License Key</th>
+                <th style="padding: 14px 20px;">Tier</th>
+                <th style="padding: 14px 20px;">Status</th>
+                <th style="padding: 14px 20px;">Given To (User / Order)</th>
+                <th style="padding: 14px 20px; text-align: right;">Action</th>
+              </tr>
+            </thead>
+            <tbody id="admin-keys-tbody">
+              <tr>
+                <td colspan="7" style="padding: 30px; text-align: center; color: var(--text-dark);">Loading keys...</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Customers Table -->
+      <div style="background: var(--bg-card); border: 1px solid var(--border-card); border-radius: var(--radius-md); overflow: hidden;">
+        <div style="padding: 20px 24px; border-bottom: 1px solid var(--border-card); display: flex; justify-content: space-between; align-items: center;">
+          <h2 style="font-size: 1.25rem; font-weight: 800;"><i class="fa-solid fa-users" style="color: var(--primary-orange); margin-right: 8px;"></i> Registered Customers</h2>
+          <button class="btn btn-withdraw btn-sm" onclick="loadAdminOverview()"><i class="fa-solid fa-rotate-right" style="margin-right: 4px;"></i> Refresh Data</button>
+        </div>
+
+        <div style="overflow-x: auto;">
+          <table style="width: 100%; border-collapse: collapse; font-size: 0.85rem;">
+            <thead>
+              <tr style="border-bottom: 1px solid var(--border-card); text-align: left; color: var(--text-dark); font-size: 0.75rem; text-transform: uppercase;">
+                <th style="padding: 14px 20px;">ID</th>
+                <th style="padding: 14px 20px;">Username</th>
+                <th style="padding: 14px 20px;">Email</th>
+                <th style="padding: 14px 20px;">Balance</th>
+                <th style="padding: 14px 20px;">Role</th>
+                <th style="padding: 14px 20px;">Joined</th>
+              </tr>
+            </thead>
+            <tbody id="admin-users-tbody">
+              <tr>
+                <td colspan="6" style="padding: 30px; text-align: center; color: var(--text-dark);">Loading customers...</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <div id="toast-container" class="toast-box"></div>
+
+  <script src="/static/js/app.js"></script>
+  <script>
+    let currentKeyFilter = 'all';
+
+    document.addEventListener('DOMContentLoaded', () => {
+      loadAdminOverview();
+      loadAdminKeys();
+    });
+
+    async function loadAdminOverview() {
+      try {
+        const res = await fetch('/api/admin/overview');
+        if (res.status === 403 || res.status === 401) {
+          window.location.href = '/';
+          return;
+        }
+
+        const data = await res.json();
+
+        // Update stats
+        document.getElementById('stat-keys').innerText = data.available_keys;
+        document.getElementById('stat-used-keys').innerText = data.used_keys;
+        document.getElementById('stat-revenue').innerText = `₱${parseFloat(data.total_revenue).toFixed(2)}`;
+        document.getElementById('stat-orders').innerText = data.total_orders;
+
+        // Render Tier Stock Cards
+        const tierCardsContainer = document.getElementById('tier-stock-cards');
+        tierCardsContainer.innerHTML = data.products.map(p => `
+          <div style="background: #141b29; border: 1px solid ${p.stock > 0 ? 'rgba(255, 255, 255, 0.4)' : 'rgba(239, 68, 68, 0.3)'}; border-radius: var(--radius-sm); padding: 14px;">
+            <div style="font-size: 0.75rem; color: var(--text-muted); font-weight: 700;">${p.duration}</div>
+            <div style="font-size: 1.25rem; font-weight: 900; color: #fff; margin: 4px 0;">₱${p.price.toFixed(0)}</div>
+            <div style="font-size: 0.8rem; font-weight: 700; color: ${p.stock > 0 ? '#f8fafc' : '#ef4444'};">
+              ${p.stock > 0 ? `<i class="fa-solid fa-circle-check" style="margin-right: 4px;"></i> ${p.stock} in stock` : '<i class="fa-solid fa-circle-xmark" style="margin-right: 4px;"></i> Out of stock'}
+            </div>
+          </div>
+        `).join('');
+
+        // Populate Products Select
+        const prodSelect = document.getElementById('key-product-select');
+        prodSelect.innerHTML = data.products.map(p => `
+          <option value="${p.id}">${p.name} (${p.duration}) - ₱${p.price.toFixed(0)} [Stock: ${p.stock}]</option>
+        `).join('');
+
+        // Populate Users Select
+        const userSelect = document.getElementById('adj-user-id');
+        userSelect.innerHTML = data.users.map(u => `
+          <option value="${u.id}">#${u.id} - ${u.username} (${u.email}) [Bal: ₱${parseFloat(u.balance).toFixed(2)}]</option>
+        `).join('');
+
+        // Populate Users Table
+        const tbody = document.getElementById('admin-users-tbody');
+        tbody.innerHTML = data.users.map(u => `
+          <tr style="border-bottom: 1px solid rgba(255, 255, 255, 0.04);">
+            <td style="padding: 14px 20px; font-family: var(--font-mono); color: var(--text-dark);">#${u.id}</td>
+            <td style="padding: 14px 20px; font-weight: 700; color: #fff;">${u.username}</td>
+            <td style="padding: 14px 20px; color: var(--text-muted);">${u.email}</td>
+            <td style="padding: 14px 20px; font-family: var(--font-mono); font-weight: 700; color: #f8fafc;">₱${parseFloat(u.balance).toFixed(2)}</td>
+            <td style="padding: 14px 20px;">
+              <span style="font-size: 0.72rem; padding: 2px 8px; border-radius: var(--radius-full); ${u.role === 'admin' ? 'background: rgba(255, 255, 255, 0.15); color: var(--primary-orange);' : 'background: rgba(255, 255, 255, 0.05); color: var(--text-dark);'}">
+                ${u.role.toUpperCase()}
+              </span>
+            </td>
+            <td style="padding: 14px 20px; font-size: 0.8rem; color: var(--text-muted);">${new Date(u.created_at).toLocaleDateString()}</td>
+          </tr>
+        `).join('');
+
+      } catch (err) {
+        showToast('Error loading admin overview.', 'error');
+      }
+    }
+
+    let selectedKeyIds = new Set();
+
+    async function loadAdminKeys() {
+      const tbody = document.getElementById('admin-keys-tbody');
+      selectedKeyIds.clear();
+      updateSelectedKeysBar();
+      const checkAll = document.getElementById('check-all-keys');
+      if (checkAll) checkAll.checked = false;
+
+      try {
+        const res = await fetch(`/api/admin/keys?status=${currentKeyFilter}`);
+        const data = await res.json();
+        const keys = data.keys || [];
+
+        if (keys.length === 0) {
+          tbody.innerHTML = `<tr><td colspan="7" style="padding: 30px; text-align: center; color: var(--text-dark);">No keys found for this filter.</td></tr>`;
+          return;
+        }
+
+        tbody.innerHTML = keys.map(k => {
+          const isUsed = k.is_used === 1;
+          return `
+            <tr style="border-bottom: 1px solid rgba(255, 255, 255, 0.04);" id="key-row-${k.id}">
+              <td style="padding: 14px 16px; text-align: center;">
+                <input type="checkbox" class="key-checkbox" value="${k.id}" onchange="toggleKeySelect(${k.id}, this.checked)" style="cursor: pointer; accent-color: var(--primary-orange); width: 16px; height: 16px;">
+              </td>
+              <td style="padding: 14px 16px; font-family: var(--font-mono); color: var(--text-dark);">#${k.id}</td>
+              <td style="padding: 14px 20px; font-family: var(--font-mono); font-weight: 700; color: ${isUsed ? '#64748b' : '#fff'}; ${isUsed ? 'text-decoration: line-through;' : ''}">
+                ${k.license_key}
+              </td>
+              <td style="padding: 14px 20px; font-weight: 600; color: var(--text-white);">${k.duration}</td>
+              <td style="padding: 14px 20px;">
+                <span class="stock-pill ${isUsed ? 'claimed' : 'in-stock'}">
+                  ${isUsed ? '<i class="fa-solid fa-circle-xmark"></i> CLAIMED / X\'D OUT' : '<i class="fa-solid fa-circle-check"></i> IN STOCK'}
+                </span>
+              </td>
+              <td style="padding: 14px 20px; font-size: 0.82rem; color: var(--text-muted);">
+                ${isUsed ? `<strong style="color: #fff;">${k.claimed_by_user || 'Customer'}</strong> (${k.order_id || 'Delivered'})` : '<span style="color: var(--text-dark);">&mdash;</span>'}
+              </td>
+              <td style="padding: 14px 20px; text-align: right; white-space: nowrap;">
+                <div style="display: inline-flex; gap: 6px;">
+                  ${isUsed ? 
+                    `<button class="btn btn-deposit btn-sm" style="padding: 4px 10px; font-size: 0.75rem;" onclick="bringBackKey(${k.id})"><i class="fa-solid fa-rotate-left"></i> Restock</button>` 
+                    : ''
+                  }
+                  <button class="btn btn-withdraw btn-sm" style="color: #ef4444; border-color: rgba(239, 68, 68, 0.3); padding: 4px 10px; font-size: 0.75rem;" onclick="deleteStockKey(${k.id})"><i class="fa-solid fa-trash"></i> Delete</button>
+                </div>
+              </td>
+            </tr>
+          `;
+        }).join('');
+      } catch (err) {
+        tbody.innerHTML = `<tr><td colspan="7" style="padding: 30px; text-align: center; color: #ef4444;">Error loading keys.</td></tr>`;
+      }
+    }
+
+    function toggleKeySelect(id, isChecked) {
+      if (isChecked) {
+        selectedKeyIds.add(id);
+      } else {
+        selectedKeyIds.delete(id);
+      }
+      updateSelectedKeysBar();
+    }
+
+    function toggleSelectAllKeys(masterBox) {
+      const checkboxes = document.querySelectorAll('.key-checkbox');
+      checkboxes.forEach(cb => {
+        cb.checked = masterBox.checked;
+        const id = parseInt(cb.value);
+        if (masterBox.checked) {
+          selectedKeyIds.add(id);
+        } else {
+          selectedKeyIds.delete(id);
+        }
+      });
+      updateSelectedKeysBar();
+    }
+
+    function clearSelectedKeys() {
+      selectedKeyIds.clear();
+      document.querySelectorAll('.key-checkbox').forEach(cb => cb.checked = false);
+      const master = document.getElementById('check-all-keys');
+      if (master) master.checked = false;
+      updateSelectedKeysBar();
+    }
+
+    function updateSelectedKeysBar() {
+      const bar = document.getElementById('batch-key-actions-bar');
+      const countEl = document.getElementById('selected-keys-count');
+      if (!bar || !countEl) return;
+
+      const count = selectedKeyIds.size;
+      countEl.innerText = count;
+
+      if (count > 0) {
+        bar.style.display = 'flex';
+      } else {
+        bar.style.display = 'none';
+      }
+    }
+
+    async function deleteSelectedKeys() {
+      if (selectedKeyIds.size === 0) {
+        showToast('Please select at least one key to delete.', 'info');
+        return;
+      }
+      const ids = Array.from(selectedKeyIds);
+      if (!confirm(`Are you sure you want to permanently delete ${ids.length} selected key(s)?`)) return;
+
+      try {
+        const res = await fetch('/api/admin/keys/delete', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ ids: ids })
+        });
+        const data = await res.json();
+        if (res.ok) {
+          showToast(data.message || `Deleted ${ids.length} keys successfully!`, 'success');
+          selectedKeyIds.clear();
+          loadAdminOverview();
+          loadAdminKeys();
+        } else {
+          showToast(data.error || 'Failed to delete selected keys', 'error');
+        }
+      } catch (e) {
+        showToast('Error deleting selected keys.', 'error');
+      }
+    }
+
+    function filterKeys(filter) {
+      currentKeyFilter = filter;
+      document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+      document.getElementById(`btn-filter-${filter}`).classList.add('active');
+      loadAdminKeys();
+    }
+
+    async function deleteStockKey(keyId) {
+      if (!confirm('Are you sure you want to delete this key?')) return;
+      try {
+        const res = await fetch('/api/admin/keys/delete', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ id: keyId })
+        });
+        const data = await res.json();
+        if (res.ok) {
+          showToast(data.message || 'Key deleted from inventory.', 'success');
+          selectedKeyIds.delete(keyId);
+          updateSelectedKeysBar();
+          loadAdminOverview();
+          loadAdminKeys();
+        } else {
+          showToast(data.error || 'Failed to delete key', 'error');
+        }
+      } catch(e) {
+        showToast('Error deleting key.', 'error');
+      }
+    }
+
+    async function bringBackKey(keyId) {
+      try {
+        const res = await fetch('/api/admin/keys/bring-back', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ id: keyId })
+        });
+        const data = await res.json();
+        if (res.ok) {
+          showToast(data.message || 'Key brought back to available stock!', 'success');
+          loadAdminOverview();
+          loadAdminKeys();
+        } else {
+          showToast(data.error || 'Failed to bring back key', 'error');
+        }
+      } catch(e) {
+        showToast('Error restocking key.', 'error');
+      }
+    }
+
+    async function bringBackAllKeys() {
+      if (!confirm('Are you sure you want to bring ALL claimed keys back to available stock?')) return;
+      try {
+        const res = await fetch('/api/admin/keys/bring-back', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ all: true })
+        });
+        const data = await res.json();
+        if (res.ok) {
+          showToast(data.message || 'All claimed keys brought back to stock!', 'success');
+          loadAdminOverview();
+          loadAdminKeys();
+        } else {
+          showToast(data.error || 'Failed to restock keys', 'error');
+        }
+      } catch(e) {
+        showToast('Error restocking keys.', 'error');
+      }
+    }
+
+    async function handleImportKeys(e) {
+      e.preventDefault();
+      const productId = document.getElementById('key-product-select').value;
+      const rawKeys = document.getElementById('key-bulk-textarea').value.trim();
+      const btn = document.getElementById('btn-import-keys');
+
+      if (!productId || !rawKeys) {
+        showToast('Please select a tier and paste keys.', 'error');
+        return;
+      }
+
+      btn.disabled = true;
+      btn.innerText = 'Importing...';
+
+      try {
+        const res = await fetch('/api/admin/keys/add', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ product_id: productId, keys: rawKeys })
+        });
+        const data = await res.json();
+
+        if (!res.ok) {
+          showToast(data.error || 'Import failed', 'error');
+          btn.disabled = false;
+          btn.innerText = '+ Add Keys to Stock';
+          return;
+        }
+
+        showToast(data.message, 'success');
+        document.getElementById('key-bulk-textarea').value = '';
+        btn.disabled = false;
+        btn.innerText = '+ Add Keys to Stock';
+        loadAdminOverview();
+        loadAdminKeys();
+      } catch (err) {
+        showToast('Network error during import.', 'error');
+        btn.disabled = false;
+        btn.innerText = '+ Add Keys to Stock';
+      }
+    }
+
+    async function handleAdjustBalance(e) {
+      e.preventDefault();
+      const userId = document.getElementById('adj-user-id').value;
+      const amount = parseFloat(document.getElementById('adj-amount').value);
+      const reason = document.getElementById('adj-reason').value.trim();
+      const btn = document.getElementById('btn-adjust-submit');
+
+      if (!userId || isNaN(amount)) {
+        showToast('Please select a user and amount.', 'error');
+        return;
+      }
+
+      btn.disabled = true;
+      btn.innerText = 'Adjusting...';
+
+      try {
+        const res = await fetch('/api/admin/users/balance', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ user_id: userId, amount, reason })
+        });
+        const data = await res.json();
+
+        if (!res.ok) {
+          showToast(data.error || 'Adjustment failed', 'error');
+          btn.disabled = false;
+          btn.innerText = 'Apply Adjustment';
+          return;
+        }
+
+        showToast(data.message, 'success');
+        btn.disabled = false;
+        btn.innerText = 'Apply Adjustment';
+        loadAdminOverview();
+      } catch (err) {
+        showToast('Network error during adjustment.', 'error');
+        btn.disabled = false;
+        btn.innerText = 'Apply Adjustment';
+      }
+    }
+
+    async function lockAdminSession() {
+      try {
+        await fetch('/api/admin/lock', { method: 'POST' });
+        showToast('Admin session locked.', 'info');
+        setTimeout(() => { window.location.href = '/products'; }, 400);
+      } catch (err) {
+        window.location.href = '/products';
+      }
+    }
+  </script>
+</body>
+</html>

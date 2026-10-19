@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Products | OVKSHOP</title>
+  <meta name="description" content="Browse our premium digital license keys. Automated PayMongo checkout via GCash, Maya, and credit cards.">
+  <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body>
+
+  <!-- Header / Navbar (Screenshot 2) -->
+  <header class="site-header">
+    <div class="container header-container">
+      <a href="/dashboard" class="brand-logo">
+        <img src="/static/images/logo.png" alt="OVK Logo" class="brand-logo-img">
+        <span class="brand-logo-text">OVK HAX</span>
+      </a>
+
+      <!-- Pill Nav Bar -->
+      <nav class="nav-pills">
+        <div class="nav-pill-item"><a href="/dashboard">HOME</a></div>
+        <div class="nav-pill-item active"><a href="/products" class="active">PRODUCTS</a></div>
+        <div class="nav-pill-item"><a href="/tutorial">TUTORIAL</a></div>
+        <div class="nav-pill-item"><a href="javascript:void(0)" onclick="openSupportModal()">SUPPORT</a></div>
+      </nav>
+
+      <!-- Right Actions (Balance & Avatar) -->
+      <div class="header-actions" id="header-actions-area">
+        <a href="/login" class="btn btn-withdraw btn-sm">Sign In</a>
+        <a href="/login?tab=register" class="btn btn-deposit btn-sm">Register</a>
+      </div>
+    </div>
+  </header>
+
+  <div class="page-wrap">
+    <div class="container">
+
+      <!-- Tactical Page Header -->
+      <div class="products-header">
+        <h1 class="dash-title">
+          <span class="dash-title-white">PREMIUM</span>
+          <span class="dash-title-white" style="color: var(--primary-orange);">CATALOG</span>
+        </h1>
+      </div>
+
+      <!-- Filter / Search Card -->
+      <div class="filter-bar-card">
+        <div class="search-input-wrap">
+          <svg class="search-icon-left" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
+          </svg>
+          <input type="text" id="catalog-search-input" class="filter-input" placeholder="Search...">
+          <button class="filter-btn-search" title="Search">
+            <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+              <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
+            </svg>
+          </button>
+        </div>
+
+        <div class="filter-dropdowns-row">
+          <select class="filter-select">
+            <option value="all">All Categories</option>
+            <option value="games">Games</option>
+          </select>
+
+          <select class="filter-select">
+            <option value="all">All Platforms</option>
+            <option value="android">Android</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Product Count -->
+      <div class="products-count-text" id="products-count">Loading products...</div>
+
+      <!-- Product Cards Horizontal List (Matches Screenshot 2) -->
+      <div id="products-catalog-container">
+        <!-- Injected dynamically via app.js -->
+        <div style="text-align: center; color: var(--text-dark); padding: 40px;">
+          Loading catalog...
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ========================================== -->
+  <!-- MODAL: PRODUCT DURATION OPTIONS -->
+  <!-- ========================================== -->
+  <div class="modal-overlay" id="options-modal">
+    <div class="modal-box">
+      <button class="modal-close-btn" onclick="closeOptionsModal()">&times;</button>
+      
+      <span style="font-size: 0.72rem; font-weight: 800; color: var(--primary-orange); text-transform: uppercase; letter-spacing: 0.8px;" id="opt-modal-cat">GAMES</span>
+      <h3 style="font-size: 1.35rem; font-weight: 800; margin-bottom: 6px;" id="opt-modal-title">Select Duration Option</h3>
+      <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 16px;">Choose a subscription duration to activate your license key immediately.</p>
+
+      <div class="options-selector-list" id="options-list">
+        <!-- Rendered by app.js: 3 Days, 7 Days, 14 Days, 30 Days, 60 Days, Lifetime -->
+      </div>
+
+      <div style="margin-top: 20px;">
+        <button id="btn-buy-option" class="btn btn-deposit" style="width: 100%; border-radius: var(--radius-sm); padding: 14px;" onclick="handlePurchaseSelected()">
+          PURCHASE KEY
+        </button>
+      </div>
+
+      <div style="text-align: center; margin-top: 14px;">
+        <span style="font-size: 0.78rem; color: var(--text-dark);">
+          Need more credits? <a href="javascript:void(0)" onclick="closeOptionsModal(); openDepositModal();" style="color: var(--primary-orange); font-weight: 700;">+ Deposit via PayMongo</a>
+        </span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========================================== -->
+  <!-- MODAL: DEPOSIT (PAYMONGO GCASH/MAYA/CARD) -->
+  <!-- ========================================== -->
+  <div class="modal-overlay" id="deposit-modal">
+    <div class="modal-box">
+      <button class="modal-close-btn" onclick="closeDepositModal()">&times;</button>
+      
+      <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 4px;">
+        <i class="fa-solid fa-bolt" style="font-size: 1.25rem; color: var(--primary-orange);"></i>
+        <h3 style="font-size: 1.3rem; font-weight: 800; text-transform: uppercase;">Deposit Credits</h3>
+      </div>
+      <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 20px;">Instant wallet top-up via PayMongo (GCash, Maya, GrabPay, Credit/Debit Cards).</p>
+
+      <div style="margin-bottom: 18px;">
+        <label style="font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; color: var(--text-dark); display: block; margin-bottom: 10px;">Select Credits to Add</label>
+        <div class="deposit-presets-grid" style="grid-template-columns: repeat(3, 1fr); gap: 10px;">
+          <button class="preset-chip active" data-amount="100">₱100</button>
+          <button class="preset-chip" data-amount="200">₱200</button>
+          <button class="preset-chip" data-amount="300">₱300</button>
+          <button class="preset-chip" data-amount="500">₱500</button>
+          <button class="preset-chip" data-amount="700">₱700</button>
+          <button class="preset-chip" data-amount="1000">₱1000</button>
+        </div>
+      </div>
+
+      <div style="margin-bottom: 20px;">
+        <label style="font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; color: var(--text-dark); display: block; margin-bottom: 8px;">Selected Amount in PHP (₱)</label>
+        <input type="number" id="deposit-amt-input" class="deposit-input" value="100" readonly style="background: #192134; cursor: default;">
+      </div>
+
+      <button id="btn-paymongo-checkout" class="btn btn-deposit" style="width: 100%; border-radius: var(--radius-sm); padding: 14px;" onclick="proceedPaymongoCheckout()">
+        <i class="fa-solid fa-credit-card" style="margin-right: 6px;"></i> DEPOSIT VIA PAYMONGO (GCASH / MAYA)
+      </button>
+
+      <div style="display: flex; justify-content: center; gap: 10px; margin-top: 18px; border-top: 1px solid var(--border-card); padding-top: 14px;">
+        <span style="font-size: 0.72rem; color: #3b82f6; font-weight: 700; background: rgba(59, 130, 246, 0.1); padding: 2px 8px; border-radius: var(--radius-full);">GCash</span>
+        <span style="font-size: 0.72rem; color: #f8fafc; font-weight: 700; background: rgba(255, 255, 255, 0.1); padding: 2px 8px; border-radius: var(--radius-full);">Maya</span>
+        <span style="font-size: 0.72rem; color: #f59e0b; font-weight: 700; background: rgba(245, 158, 11, 0.1); padding: 2px 8px; border-radius: var(--radius-full);">Visa / Mastercard</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========================================== -->
+  <!-- MODAL: KEY DELIVERED -->
+  <!-- ========================================== -->
+  <div class="modal-overlay" id="key-delivery-modal">
+    <div class="modal-box" style="text-align: center;">
+      <button class="modal-close-btn" onclick="closeKeyModal()">&times;</button>
+      
+      <div style="width: 50px; height: 50px; background: rgba(255, 255, 255, 0.15); border: 1px solid var(--badge-green); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 14px; color: var(--badge-green); font-size: 1.4rem;">
+        ✓
+      </div>
+
+      <h3 style="font-size: 1.4rem; font-weight: 800; color: #fff; margin-bottom: 4px;">Purchase Complete!</h3>
+      <p style="font-size: 0.85rem; color: var(--text-muted);" id="delivered-key-tier">VIP Access</p>
+      <div style="font-size: 0.75rem; color: var(--text-dark); margin: 6px 0 16px;" id="delivered-key-order">Order ID</div>
+
+      <div style="background: var(--bg-subtle); border: 1px solid var(--border-subtle); padding: 14px; border-radius: var(--radius-sm); display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 16px;">
+        <span id="delivered-key-text" style="font-family: var(--font-mono); font-size: 0.95rem; color: var(--primary-orange); letter-spacing: 0.5px; word-break: break-all;">OVK-XXXX-XXXX</span>
+        <button class="btn btn-deposit btn-sm" onclick="copyDeliveredKey()">Copy</button>
+      </div>
+
+      <p style="font-size: 0.78rem; color: var(--text-muted); margin-bottom: 20px;">
+        Your key has been saved to your dashboard. Paste this key into the loader to activate your VIP access.
+      </p>
+
+      <div style="display: flex; gap: 10px;">
+        <button class="btn btn-withdraw" style="flex: 1;" onclick="closeKeyModal()">Done</button>
+        <a href="/dashboard" class="btn btn-deposit" style="flex: 1;">View Dashboard</a>
+      </div>
+    </div>
+  </div>
+
+  <div id="toast-container" class="toast-box"></div>
+
+  <script src="/static/js/app.js"></script>
+  <script>
+    function openTrialModal() {
+      window.open('https://t.me/ovkfiles', '_blank');
+    }
+    function openSupportModal() {
+      const modal = document.getElementById('support-modal');
+      if (modal) modal.classList.add('active');
+      else window.open('https://t.me/kovalucy', '_blank');
+    }
+  </script>
+
+  <!-- ========================================== -->
+  <!-- MODAL: SUPPORT & HELP (Reference Design) -->
+  <!-- ========================================== -->
+  <div class="modal-overlay" id="support-modal">
+    <div class="modal-box support-modal-box">
+      <button class="modal-close-btn" onclick="closeSupportModal()">&times;</button>
+      
+      <div class="support-modal-header">
+        <h2 class="support-main-title">Support &amp; Help</h2>
+        <p class="support-main-subtext">Get help with orders, keys, or account issues.</p>
+      </div>
+
+      <div class="support-faq-list">
+        <!-- 1. License key delivery -->
+        <div class="support-faq-item open" onclick="toggleFaqItem(this)">
+          <div class="faq-item-head">
+            <div class="faq-head-left">
+              <div class="faq-icon-box icon-purple">
+                <i class="fa-solid fa-key"></i>
+              </div>
+              <div>
+                <div class="faq-question">How do I receive my license key?</div>
+                <div class="faq-hint">Instant delivery after purchase</div>
+              </div>
+            </div>
+            <div class="faq-chevron"><i class="fa-solid fa-chevron-down"></i></div>
+          </div>
+          <div class="faq-item-body">
+            After a successful purchase, your license key is immediately visible in <strong>My Orders</strong> on your dashboard. You can copy it directly from there. Keys are never sent by email — always check your Orders section.
+          </div>
+        </div>
+
+        <!-- 2. Deposit time -->
+        <div class="support-faq-item" onclick="toggleFaqItem(this)">
+          <div class="faq-item-head">
+            <div class="faq-head-left">
+              <div class="faq-icon-box icon-green">
+                <i class="fa-solid fa-wallet"></i>
+              </div>
+              <div>
+                <div class="faq-question">How long does a deposit take?</div>
+                <div class="faq-hint">Deposit processing time</div>
+              </div>
+            </div>
+            <div class="faq-chevron"><i class="fa-solid fa-chevron-down"></i></div>
+          </div>
+          <div class="faq-item-body">
+            Deposits via PayMongo (GCash, Maya, and Card) are fully automated and credited within seconds. If you ever have a pending transaction, refresh your balance or contact admin with your receipt.
+          </div>
+        </div>
+
+        <!-- 3. Refund policy -->
+        <div class="support-faq-item" onclick="toggleFaqItem(this)">
+          <div class="faq-item-head">
+            <div class="faq-head-left">
+              <div class="faq-icon-box icon-red">
+                <i class="fa-solid fa-rotate-left"></i>
+              </div>
+              <div>
+                <div class="faq-question">Can I get a refund?</div>
+                <div class="faq-hint">Refund policy</div>
+              </div>
+            </div>
+            <div class="faq-chevron"><i class="fa-solid fa-chevron-down"></i></div>
+          </div>
+          <div class="faq-item-body">
+            Due to the digital nature of instant license keys, all sales are final once the key is generated and revealed. Please ensure you are purchasing the right tier for your device before confirming.
+          </div>
+        </div>
+
+        <!-- 4. Payment Security -->
+        <div class="support-faq-item" onclick="toggleFaqItem(this)">
+          <div class="faq-item-head">
+            <div class="faq-head-left">
+              <div class="faq-icon-box icon-amber">
+                <i class="fa-solid fa-shield-halved"></i>
+              </div>
+              <div>
+                <div class="faq-question">Is my payment secure?</div>
+                <div class="faq-hint">Security &amp; privacy</div>
+              </div>
+            </div>
+            <div class="faq-chevron"><i class="fa-solid fa-chevron-down"></i></div>
+          </div>
+          <div class="faq-item-body">
+            Yes! All payment channels are processed directly through PayMongo encrypted gateways. We never see or store your payment passwords or PIN numbers.
+          </div>
+        </div>
+      </div>
+
+      <!-- Still need help bottom box -->
+      <div class="support-bottom-card">
+        <div class="support-agent-icon">
+          <i class="fa-solid fa-headset"></i>
+        </div>
+        <h3 class="support-bottom-title">Still need help?</h3>
+        <p class="support-bottom-sub">Our support team is available to assist you. Reach out through any channel below.</p>
+        <div class="support-action-buttons">
+          <a href="https://t.me/kovalucy" target="_blank" class="btn-support-channel btn-tg">
+            <i class="fa-brands fa-telegram"></i> Telegram
+          </a>
+          <a href="https://t.me/ovkfiles" target="_blank" class="btn-support-channel btn-files">
+            <i class="fa-solid fa-folder-open"></i> OVK Files
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</body>
+</html>

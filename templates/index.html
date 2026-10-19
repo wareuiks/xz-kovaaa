@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>OVK | Undetected VIP Access & Instant Key Delivery</title>
+  <meta name="description" content="Official OVK Store. Instant license key delivery, wallet add funds via PayMongo (GCash, Maya, Cards), and 24/7 undetected bypass access.">
+  <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body>
+
+  <!-- Navbar -->
+  <header class="navbar">
+    <div class="container nav-container">
+      <a href="/" class="brand">
+        <div class="brand-icon"><i class="fa-solid fa-bolt"></i></div>
+        <div class="brand-text">OVK<span>.STORE</span></div>
+        <span class="brand-badge">VIP</span>
+      </a>
+
+      <ul class="nav-links">
+        <li><a href="/" class="active">Store</a></li>
+        <li><a href="#features">Features</a></li>
+        <li><a href="#pricing">Pricelist</a></li>
+        <li><a href="#status">Status</a></li>
+        <li><a href="#faq">FAQ</a></li>
+      </ul>
+
+      <div class="nav-actions" id="nav-actions">
+        <!-- Injected dynamically via app.js -->
+        <a href="/login" class="btn btn-outline btn-sm">Sign In</a>
+        <a href="/login?tab=register" class="btn btn-cyan btn-sm">Register</a>
+      </div>
+    </div>
+  </header>
+
+  <!-- Hero Section -->
+  <section class="hero">
+    <div class="container">
+      <div class="hero-badge-wrap">
+        <span class="status-dot"></span>
+        <span class="hero-badge-text">STATUS: ALL BUILDS UNDETECTED & ONLINE</span>
+      </div>
+
+      <h1 class="hero-title">
+        PREMIUM GAME ENHANCEMENT<br>
+        <span class="gradient-text">INSTANT AUTOMATED DELIVERY</span>
+      </h1>
+
+      <p class="hero-desc">
+        Fast, secure, and fully automated. Top-up your wallet seamlessly via PayMongo (GCash, Maya, GrabPay & Cards) and receive your license keys in milliseconds.
+      </p>
+
+      <div style="display: flex; gap: 14px; justify-content: center; flex-wrap: wrap;">
+        <a href="#pricing" class="btn btn-cyan btn-lg">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+          View Pricelist & Keys
+        </a>
+        <button class="btn btn-outline btn-lg" onclick="openAddFundsModal()">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 5v14M5 12h14"/></svg>
+          Add Funds via PayMongo
+        </button>
+      </div>
+
+      <div class="hero-stats">
+        <div class="stat-item">
+          <span class="stat-val">99.9%</span>
+          <span class="stat-lbl">Uptime & Bypass</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-val">&lt; 1 sec</span>
+          <span class="stat-lbl">Key Delivery</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-val">2,400+</span>
+          <span class="stat-lbl">Active Users</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Pricing Grid Section -->
+  <section class="pricing-section" id="pricing">
+    <div class="container">
+      <div class="section-header">
+        <h2>Choose Your Access Tier</h2>
+        <p>Transparent pricing in Philippine Pesos (PHP). Unlocked instantly upon wallet confirmation.</p>
+      </div>
+
+      <div class="pricing-grid" id="pricing-grid">
+        <!-- Rendered by app.js from /api/products -->
+        <div style="text-align: center; color: var(--text-muted); padding: 40px; grid-column: 1 / -1;">
+          Loading store tiers...
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Features Section -->
+  <section id="features" style="padding: 70px 0; border-top: 1px solid var(--border); background: rgba(13, 15, 28, 0.4);">
+    <div class="container">
+      <div class="section-header">
+        <h2>Why Gamers Choose OVK</h2>
+        <p>Engineered for performance, privacy, and frictionless transactions.</p>
+      </div>
+
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 24px;">
+        <div style="background: var(--bg-card); padding: 28px; border-radius: var(--radius-lg); border: 1px solid var(--border);">
+          <div style="font-size: 2rem; margin-bottom: 12px;">🇵🇭</div>
+          <h3 style="font-size: 1.2rem; margin-bottom: 8px;">Direct PayMongo Integration</h3>
+          <p style="color: var(--text-muted); font-size: 0.9rem;">Deposit directly with Philippine e-wallets like GCash, Maya, GrabPay, or credit/debit cards with instant verification.</p>
+        </div>
+
+        <div style="background: var(--bg-card); padding: 28px; border-radius: var(--radius-lg); border: 1px solid var(--border);">
+          <div style="font-size: 1.8rem; margin-bottom: 14px; color: var(--primary-orange);"><i class="fa-solid fa-bolt"></i></div>
+          <h3 style="font-size: 1.2rem; margin-bottom: 8px;">Zero Wait Automated Delivery</h3>
+          <p style="color: var(--text-muted); font-size: 0.9rem;">No manual admin approvals. The second you click purchase, your license key is provisioned and saved to your dashboard.</p>
+        </div>
+
+        <div style="background: var(--bg-card); padding: 28px; border-radius: var(--radius-lg); border: 1px solid var(--border);">
+          <div style="font-size: 1.8rem; margin-bottom: 14px; color: var(--badge-green);"><i class="fa-solid fa-shield-halved"></i></div>
+          <h3 style="font-size: 1.2rem; margin-bottom: 8px;">Clean Memory Injection & Bypass</h3>
+          <p style="color: var(--text-muted); font-size: 0.9rem;">Continuous anti-cheat bypass updates so you stay ahead of banwaves. Includes auto loader and HWID resets.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FAQ Section -->
+  <section id="faq" style="padding: 70px 0; border-top: 1px solid var(--border);">
+    <div class="container" style="max-width: 800px;">
+      <div class="section-header">
+        <h2>Frequently Asked Questions</h2>
+        <p>Everything you need to know about purchasing and adding funds.</p>
+      </div>
+
+      <div style="display: flex; flex-direction: column; gap: 16px;">
+        <div style="background: var(--bg-card); padding: 20px 24px; border-radius: var(--radius-md); border: 1px solid var(--border);">
+          <h4 style="font-size: 1.05rem; margin-bottom: 6px;">How do I add funds using GCash or Maya?</h4>
+          <p style="color: var(--text-muted); font-size: 0.9rem;">Click "Add Funds", choose or type your amount (e.g. ₱100 or ₱300), and click Proceed. PayMongo will open a secure checkout window where you can scan a QR code or pay with GCash/Maya. Once paid, your balance updates immediately.</p>
+        </div>
+
+        <div style="background: var(--bg-card); padding: 20px 24px; border-radius: var(--radius-md); border: 1px solid var(--border);">
+          <h4 style="font-size: 1.05rem; margin-bottom: 6px;">Where do I view my license key after purchasing?</h4>
+          <p style="color: var(--text-muted); font-size: 0.9rem;">Your license key pops up immediately in a copyable modal, and is also permanently accessible inside your <strong>Dashboard</strong> under "My License Keys".</p>
+        </div>
+
+        <div style="background: var(--bg-card); padding: 20px 24px; border-radius: var(--radius-md); border: 1px solid var(--border);">
+          <h4 style="font-size: 1.05rem; margin-bottom: 6px;">Can I reset my HWID if I change devices?</h4>
+          <p style="color: var(--text-muted); font-size: 0.9rem;">Yes! All tiers 7 Days and above include automated HWID resets directly linked to your license key.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer style="padding: 40px 0; border-top: 1px solid var(--border); text-align: center; color: var(--text-dark); font-size: 0.85rem;">
+    <div class="container">
+      <p style="margin-bottom: 8px;">&copy; 2026 OVK Store. All rights reserved. Automated Payment Engine powered by PayMongo API.</p>
+      <p>Secure SSL Encrypted Checkout &bull; Instant Delivery &bull; <a href="https://t.me/ovkfiles" target="_blank" style="color: #38bdf8;">Official Files Channel</a> &bull; <a href="https://t.me/kovalucy" target="_blank" style="color: #38bdf8;">24/7 Telegram Support</a></p>
+    </div>
+  </footer>
+
+  <!-- ========================================== -->
+  <!-- MODAL: ADD FUNDS (PAYMONGO) -->
+  <!-- ========================================== -->
+  <div class="modal-overlay" id="add-funds-modal">
+    <div class="modal-card">
+      <button class="modal-close" onclick="closeAddFundsModal()">&times;</button>
+      <h3 class="modal-title">Deposit to Wallet</h3>
+      <p class="modal-desc">Top up your balance instantly using PayMongo (GCash, Maya, GrabPay, Card).</p>
+
+      <div class="form-group">
+        <label class="form-label">Quick Presets (PHP)</label>
+        <div class="preset-grid">
+          <button class="preset-btn" data-amount="70" onclick="selectPreset(70)">₱70 (3D)</button>
+          <button class="preset-btn selected" data-amount="100" onclick="selectPreset(100)">₱100 (7D)</button>
+          <button class="preset-btn" data-amount="200" onclick="selectPreset(200)">₱200 (14D)</button>
+          <button class="preset-btn" data-amount="300" onclick="selectPreset(300)">₱300 (30D)</button>
+          <button class="preset-btn" data-amount="450" onclick="selectPreset(450)">₱450 (60D)</button>
+          <button class="preset-btn" data-amount="700" onclick="selectPreset(700)">₱700 (Life)</button>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="deposit-custom-input">Amount in Philippine Pesos (₱)</label>
+        <input type="number" id="deposit-custom-input" class="form-input" min="20" step="1" value="100" placeholder="Minimum ₱20.00">
+      </div>
+
+      <div style="margin-top: 24px;">
+        <button id="btn-checkout-submit" class="btn btn-cyan btn-block btn-lg" onclick="startPaymongoCheckout()">
+          Proceed to PayMongo Checkout
+        </button>
+      </div>
+
+      <div class="payment-methods-strip">
+        <span class="pay-badge pay-gcash">GCash</span>
+        <span class="pay-badge pay-maya">Maya</span>
+        <span class="pay-badge pay-card">Cards / Visa / MC</span>
+        <span class="pay-badge">GrabPay</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========================================== -->
+  <!-- MODAL: KEY DELIVERED -->
+  <!-- ========================================== -->
+  <div class="modal-overlay" id="key-modal">
+    <div class="modal-card" style="text-align: center;">
+      <button class="modal-close" onclick="closeKeyModal()">&times;</button>
+      
+      <div style="width: 54px; height: 54px; background: rgba(255, 255, 255, 0.15); border: 1px solid #f8fafc; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 16px; color: #f8fafc; font-size: 1.5rem;">
+        ✓
+      </div>
+
+      <h3 class="modal-title" style="color: #f8fafc;">Purchase Successful!</h3>
+      <p class="modal-desc" id="modal-key-tier">VIP Access</p>
+      <div style="font-size: 0.8rem; color: var(--text-dark); margin-bottom: 12px;" id="modal-key-order"></div>
+
+      <div class="key-box">
+        <span class="key-text" id="modal-license-key">OVK-XXXX-XXXX-XXXX</span>
+        <button class="btn btn-cyan btn-sm" onclick="copyKeyToClipboard()" title="Copy Key">
+          Copy
+        </button>
+      </div>
+
+      <p style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 20px;">
+        Paste this key into the loader to activate your VIP access. This key has also been permanently saved in your dashboard.
+      </p>
+
+      <div style="display: flex; gap: 10px;">
+        <button class="btn btn-outline btn-block" onclick="closeKeyModal()">Done</button>
+        <a href="/dashboard" class="btn btn-primary btn-block">View Dashboard</a>
+      </div>
+    </div>
+  </div>
+
+  <script src="/static/js/app.js"></script>
+</body>
+</html>
